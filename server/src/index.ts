@@ -1,11 +1,18 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import routes from "./routes/index.js";
 
 const app = new Hono();
 
 app.get("/", (c) => {
   return c.text("🫧🫧🫧");
 });
+
+app.get("/health", (c) => {
+  return c.json({ status: "ok" });
+});
+
+app.route("/api", routes);
 
 serve(
   {
