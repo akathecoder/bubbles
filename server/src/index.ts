@@ -5,7 +5,7 @@ import routes from "./routes/index.js";
 const app = new Hono();
 
 app.get("/", (c) => {
-  return c.text("🫧🫧🫧");
+  return c.json({ message: "🫧🫧🫧" });
 });
 
 app.get("/health", (c) => {
