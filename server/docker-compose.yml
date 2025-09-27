@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:17
+    container_name: bubbles_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PG_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      PG_MAX_CONNECTIONS: ${PG_MAX_CONNECTIONS}
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bubbles_net
+volumes:
+  postgres_data:
+networks:
+  bubbles_net:
+    driver: bridge

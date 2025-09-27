@@ -1,6 +1,11 @@
 import { Hono } from "hono";
 import type { Hex } from "viem";
-import { getEnsAddressUsingCCIPLookup } from "../services/ens_lookup.js";
+import {
+  getEnsAddressUsingCCIPLookup,
+  getName,
+  getNames,
+  setName,
+} from "../services/ens_lookup.js";
 
 const ensRoutes = new Hono();
 
@@ -31,5 +36,18 @@ ensRoutes.get("/lookup/:name/:data", async (c) => {
     );
   }
 });
+
+ensRoutes.get("/get/:name", (c) => {
+  const { name } = c.req.param();
+  const response = getName(name);
+  return c.json({ response });
+});
+
+ensRoutes.get("/names", (c) => {
+  const res = getNames();
+  return c.json({ res });
+});
+
+ensRoutes.post("/set", setName);
 
 export default ensRoutes;
