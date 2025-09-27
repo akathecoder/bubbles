@@ -1,21 +1,19 @@
 // ENS Configuration
 export const ENS_CONFIG = {
   // Main domain for subdomain registration
-  DOMAIN: 'offchaindemo.eth',
+  DOMAIN: "offchaindemo.eth",
 
   // Gateway URL for ENS registration
-  GATEWAY_URL: 'https://ens-gateway.gregskril.workers.dev/set',
+  GATEWAY_URL: "https://ens-gateway.gregskril.workers.dev/set",
 
   // Chain ID for ENS resolution (mainnet)
   CHAIN_ID: 1,
 
   // Bubbles-specific ENS text record keys
   TEXT_KEYS: {
-    DESCRIPTION: 'description',
-    PREFERRED_PAYMENT: 'preferredPayment',
-    BUBBLES_PROFILE: 'com.bubbles.profile',
-    BUBBLES_AVATAR: 'com.bubbles.avatar',
-    BUBBLES_CREATED: 'com.bubbles.created',
+    DESCRIPTION: "description",
+    PREFERRED_PAYMENT: "preferredPayment",
+    BUBBLES_AVATAR: "com.bubbles.avatar",
   },
 } as const;
 
@@ -26,7 +24,7 @@ export function getFullEnsName(subdomain: string): string {
 
 // Helper to extract subdomain from full ENS name
 export function getSubdomain(fullEnsName: string): string {
-  return fullEnsName.replace(`.${ENS_CONFIG.DOMAIN}`, '');
+  return fullEnsName.replace(`.${ENS_CONFIG.DOMAIN}`, "");
 }
 
 // Validate subdomain format

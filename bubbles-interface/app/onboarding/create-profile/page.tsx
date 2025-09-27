@@ -36,7 +36,7 @@ export default function CreateProfilePage() {
   const [selectedAvatar, setSelectedAvatar] = useState(avatarOptions[0]);
   const [selectedPayment, setSelectedPayment] = useState(paymentOptions[0]);
 
-  const { saveProfile, isRegistering, error } = useProfileData();
+  const { saveProfile, isProfileSaving } = useProfileData();
 
   const { mutate: handleContinue, isPending: isGeneratingHandle } = useMutation({
     mutationKey: ["create-profile"],
@@ -220,9 +220,9 @@ export default function CreateProfilePage() {
             onClick={() => handleContinue()}
             size="lg"
             className="skeu-button font-borel h-16 w-full rounded-3xl"
-            disabled={!ensHandle.trim() || isRegistering}
+            disabled={!ensHandle.trim() || isProfileSaving}
           >
-            {isRegistering ? (
+            {isProfileSaving ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 <span className="-mb-4 align-text-bottom text-xl leading-0">Creating Profile...</span>
@@ -231,7 +231,7 @@ export default function CreateProfilePage() {
               <span className="-mb-4 align-text-bottom text-xl leading-0">Continue ✨</span>
             )}
             {/* Button shimmer effect */}
-            {!isRegistering && (
+            {!isProfileSaving && (
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
             )}
           </Button>
