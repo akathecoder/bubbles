@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Shuffle } from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
@@ -18,11 +19,36 @@ const ensHandleSuggestions = [
   "good-energy",
 ];
 
+const paymentOptions = [
+  {
+    id: "usdc-base",
+    token: "USDC",
+    chain: "Base",
+    icon: "🔵",
+    description: "USD Coin on Base",
+  },
+  {
+    id: "usdt-arbitrum",
+    token: "USDT",
+    chain: "Arbitrum",
+    icon: "🔺",
+    description: "Tether USD on Arbitrum",
+  },
+  {
+    id: "pyusd-arbitrum",
+    token: "PYUSD",
+    chain: "Arbitrum",
+    icon: "🔺",
+    description: "PayPal USD on Arbitrum",
+  },
+];
+
 export default function CreateProfilePage() {
   const router = useRouter();
   const [ensHandle, setEnsHandle] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState(avatarOptions[0]);
   const [isGeneratingHandle, setIsGeneratingHandle] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(paymentOptions[0]);
 
   const generateRandomHandle = async () => {
     setIsGeneratingHandle(true);
@@ -43,7 +69,7 @@ export default function CreateProfilePage() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-6"
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-6 py-12"
     >
       {/* Premium background elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30" />
@@ -79,15 +105,14 @@ export default function CreateProfilePage() {
           <p className="text-lg font-medium text-slate-600">Let's make you recognizable in the Bubble universe</p>
         </motion.div>
 
-        <div className="space-y-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="skeu-card space-y-8 rounded-3xl p-8"
+        >
           {/* Avatar Selection */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="skeu-card rounded-3xl p-8"
-          >
-            <h3 className="mb-6 text-lg font-bold text-slate-800">Pick your avatar</h3>
+          <div>
             <div className="flex flex-wrap items-center justify-center gap-3">
               {avatarOptions.map((avatar, i) => (
                 <motion.button
@@ -106,16 +131,10 @@ export default function CreateProfilePage() {
                 </motion.button>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Username */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="skeu-card rounded-3xl p-8"
-          >
-            <label className="mb-4 block text-lg font-bold text-slate-800">yo(U)sername</label>
+          <div>
             <div className="flex gap-3">
               <div className="relative flex-1">
                 <Input
@@ -125,7 +144,7 @@ export default function CreateProfilePage() {
                   className="h-12 rounded-xl border-slate-200 pr-12 text-base"
                 />
                 <span className="absolute top-1/2 right-3 -translate-y-1/2 text-sm font-medium text-slate-500">
-                  .eth
+                  .pay-bubbles.eth
                 </span>
               </div>
               <Button
@@ -142,27 +161,66 @@ export default function CreateProfilePage() {
                 )}
               </Button>
             </div>
-            <p className="mt-3 text-sm text-slate-500">This will be your unique Bubbles identifier</p>
-          </motion.div>
+          </div>
 
-          {/* Continue Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-          >
-            <Button
-              onClick={handleContinue}
-              size="lg"
-              className="skeu-button font-borel h-16 w-full rounded-3xl"
-              disabled={!ensHandle.trim()}
+          {/* Payment Preferences */}
+          <div>
+            <h3 className="text-lg font-bold text-slate-800">Payment Preferences</h3>
+            <p className="mb-6 text-sm text-slate-500">Choose how you'd like to receive Bubble payments</p>
+            <Select
+              value={selectedPayment.id}
+              onValueChange={(value) => {
+                const option = paymentOptions.find((opt) => opt.id === value)!;
+                setSelectedPayment(option);
+              }}
             >
-              <span className="-mb-4 align-text-bottom text-xl leading-0">Continue ✨</span>
-              {/* Button shimmer effect */}
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-            </Button>
-          </motion.div>
-        </div>
+              <SelectTrigger className="h-12 w-full rounded-xl border-slate-200">
+                <SelectValue>
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">{selectedPayment.icon}</span>
+                    <span className="font-medium">
+                      {selectedPayment.token} on {selectedPayment.chain}
+                    </span>
+                  </div>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {paymentOptions.map((option) => (
+                  <SelectItem
+                    key={option.id}
+                    value={option.id}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">{option.icon}</span>
+                      <span className="font-medium">
+                        {option.token} on {option.chain}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </motion.div>
+
+        {/* Continue Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="mt-8"
+        >
+          <Button
+            onClick={handleContinue}
+            size="lg"
+            className="skeu-button font-borel h-16 w-full rounded-3xl"
+            disabled={!ensHandle.trim()}
+          >
+            <span className="-mb-4 align-text-bottom text-xl leading-0">Continue ✨</span>
+            {/* Button shimmer effect */}
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+          </Button>
+        </motion.div>
 
         {/* Progress dots */}
         <motion.div

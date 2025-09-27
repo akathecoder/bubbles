@@ -1,20 +1,25 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { TextAnimate } from "@/components/ui/text-animate";
+import { NFCAnimation } from "@/components/ui/nfc-animation";
 import { baseSepoliaPaymasterRpc } from "@/lib/utils";
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
 import { useMutation } from "@tanstack/react-query";
 import { createZeroDevPaymasterClient } from "@zerodev/sdk";
 import { ArrowRight, CheckCircle, Zap } from "lucide-react";
+import { motion } from "motion/react";
 import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { http } from "viem";
 import { baseSepolia } from "viem/chains";
 import { usePublicClient } from "wagmi";
 
 export default function NFCPage() {
+  const router = useRouter();
   // const {
   //   data: nfcPerms,
   //   isLoading: isNfcPermsLoading,
@@ -204,258 +209,225 @@ export default function NFCPage() {
     },
   });
 
+  const handleSkip = () => {
+    router.push("/onboarding/complete");
+  };
+
+  const handleDone = () => {
+    router.push("/onboarding/complete");
+  };
+
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Enhanced Floating Bubbles Background */}
-      {/* <FloatingBubbles /> */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-6"
+    >
+      {/* Premium background elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30" />
+      <div className="texture-noise absolute top-0 left-0 h-full w-full" />
 
-      {/* Mobile-First Container */}
-      <div className="relative z-10 flex min-h-screen flex-col">
-        {/* Header */}
-        <div className="px-6 pt-8 pb-4">
-          <div className="flex items-center justify-between">
-            <div className="animate-gentle-bounce text-3xl">🫧</div>
-            <Button
-              variant="ghost"
-              // onClick={handleSkip}
-              className="text-sm"
-            >
-              Skip for now
-            </Button>
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="flex-1 px-6 pb-6">
-          <span>
-            hello
-            {/* <br />
-            nfc perms -{nfcPerms ? "yes" : "no"} - {isNfcPermsLoading ? "loading" : "loaded"}
-            <br />
-            {nfcPermsError?.name} - {nfcPermsError?.message} */}
-            <br />
-            {nfcError?.message}
-            <br />
-            {JSON.stringify(nfcData, null, 4)}
-            <br />
-            {isPending ? "pending" : "not pending"}
-          </span>
-
-          {!nfcData && !isPending && (
-            <div className="flex h-full min-h-[80vh] flex-col justify-between">
-              {/* Tutorial Content */}
-              <div className="flex flex-1 flex-col justify-center space-y-8 pt-8 text-center">
-                <div className="space-y-6">
-                  <TextAnimate
-                    animation="scaleUp"
-                    className="text-6xl"
-                    startOnView={false}
-                  >
-                    📱
-                  </TextAnimate>
-
-                  <div className="space-y-4">
-                    <TextAnimate
-                      animation="blurInUp"
-                      className="text-primary text-2xl font-bold"
-                      delay={0.3}
-                    >
-                      Connect your NFC wristband
-                    </TextAnimate>
-
-                    <TextAnimate
-                      animation="slideUp"
-                      delay={0.6}
-                      className="text-muted-foreground mx-auto max-w-md text-lg leading-relaxed"
-                    >
-                      Link your arx.org wristband to make instant connections IRL ✨
-                    </TextAnimate>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom Actions */}
-              <div className="space-y-4 pb-8">
-                <RainbowButton
-                  onClick={() => getNfcAddress()}
-                  size="lg"
-                  className="h-14 w-full rounded-2xl text-lg font-semibold"
-                >
-                  <Zap className="mr-2 h-5 w-5" />
-                  Start Connection
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </RainbowButton>
-
-                <TextAnimate
-                  animation="fadeIn"
-                  delay={1.8}
-                  className="text-muted-foreground text-center text-xs"
-                >
-                  This is optional - you can always connect later in settings
-                </TextAnimate>
-              </div>
-            </div>
-          )}
-
-          {isPending && (
-            <div className="flex h-full min-h-[80vh] flex-col items-center justify-center space-y-8">
-              {/* Scanning Animation */}
-              <div className="relative">
-                <div className="border-primary/20 flex h-32 w-32 items-center justify-center rounded-full border-4">
-                  <div className="animate-pulse text-4xl">📱</div>
-                </div>
-                <div className="border-primary absolute inset-0 animate-ping rounded-full border-4 opacity-20"></div>
-                <div className="border-accent animation-delay-200 absolute inset-2 animate-ping rounded-full border-4 opacity-30"></div>
-              </div>
-
-              <div className="space-y-4 text-center">
-                <TextAnimate
-                  animation="blurInUp"
-                  className="text-primary text-2xl font-bold"
-                >
-                  Looking for your wristband...
-                </TextAnimate>
-
-                <TextAnimate
-                  animation="slideUp"
-                  delay={0.3}
-                  className="text-muted-foreground mx-auto max-w-sm text-base"
-                >
-                  Hold your wristband close to the back of your phone
-                </TextAnimate>
-              </div>
-
-              {/* Progress indicator */}
-              <div className="w-full max-w-xs">
-                <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                  <div className="from-primary to-accent h-full w-3/4 animate-pulse rounded-full bg-gradient-to-r"></div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!!nfcData && (
-            <div className="flex h-full min-h-[80vh] flex-col justify-between">
-              {/* Success Content */}
-              <div className="flex flex-1 flex-col justify-center space-y-8 pt-8 text-center">
-                <div className="space-y-6">
-                  <TextAnimate
-                    animation="scaleUp"
-                    className="text-6xl"
-                    startOnView={false}
-                  >
-                    ✅
-                  </TextAnimate>
-
-                  <div className="space-y-4">
-                    <TextAnimate
-                      animation="blurInUp"
-                      className="text-primary text-2xl font-bold"
-                      delay={0.3}
-                    >
-                      Wristband connected!
-                    </TextAnimate>
-
-                    {nfcData}
-
-                    <TextAnimate
-                      animation="slideUp"
-                      delay={0.6}
-                      className="text-muted-foreground mx-auto max-w-md text-lg leading-relaxed"
-                    >
-                      You're all set to make instant connections by tapping wristbands 🎉
-                    </TextAnimate>
-                  </div>
-                </div>
-
-                {/* Success Card */}
-                <Card className="from-primary/10 via-accent/10 to-primary/10 border-primary/20 mx-4 border bg-gradient-to-r backdrop-blur-sm">
-                  <CardHeader className="pb-3 text-center">
-                    <div className="mb-2 text-3xl">🔗</div>
-                    <CardTitle className="text-lg">Ready to Connect</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-center">
-                      Now when you meet someone with a Bubbles wristband, just tap them together to instantly connect!
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Bottom Actions */}
-              <div className="space-y-4 pb-8">
-                <RainbowButton
-                  // onClick={handleDone}
-                  size="lg"
-                  className="h-14 w-full rounded-2xl text-lg font-semibold"
-                >
-                  <CheckCircle className="mr-2 h-5 w-5" />
-                  Start Using Bubbles
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </RainbowButton>
-
-                <TextAnimate
-                  animation="fadeIn"
-                  delay={1}
-                  className="text-muted-foreground text-center text-xs"
-                >
-                  Your wristband is now linked to your profile 🎯
-                </TextAnimate>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <span>sign7702 error: {sign7702Error?.message}</span>
-      <span>sign7702 Data: {JSON.stringify(sign7702Data)}</span>
-
-      <RainbowButton
-        onClick={() => sign7702()}
-        size="lg"
-        className="h-14 w-full rounded-2xl text-lg font-semibold"
+      {/* Main content */}
+      <motion.div
+        initial={{ scale: 0.9, y: 30 }}
+        animate={{ scale: 1, y: 0 }}
+        transition={{
+          type: "spring",
+          stiffness: 200,
+          damping: 25,
+          delay: 0.2,
+        }}
+        className="relative z-10 w-full max-w-md text-center"
       >
-        <Zap className="mr-2 h-5 w-5" />
-        Sign 7702
-        <ArrowRight className="ml-2 h-5 w-5" />
-      </RainbowButton>
-    </div>
-  );
-}
+        {!nfcData && !isPending && (
+          <>
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="mb-12"
+            >
+              <h1
+                className="font-borel mb-4 text-4xl font-bold tracking-tight text-slate-800"
+                style={{
+                  textShadow: "0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
+                }}
+              >
+                Connect Wristband
+              </h1>
+            </motion.div>
 
-// Enhanced Floating Bubbles Component
-function FloatingBubbles() {
-  const bubbles = Array.from({ length: 8 }, (_, i) => ({
-    id: i,
-    size: Math.random() * 40 + 20,
-    left: Math.random() * 100,
-    delay: Math.random() * 6,
-    duration: Math.random() * 4 + 5,
-    gradient: [
-      "bubble-gradient-pink",
-      "bubble-gradient-blue",
-      "bubble-gradient-purple",
-      "bubble-gradient-green",
-      "bubble-gradient-yellow",
-    ][Math.floor(Math.random() * 5)],
-  }));
+            {/* NFC Icon */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="mb-12"
+            >
+              <div className="skeu-card mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-purple-100 text-6xl">
+                📱
+              </div>
+            </motion.div>
 
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {bubbles.map((bubble) => (
-        <div
-          key={bubble.id}
-          className={`absolute rounded-full ${bubble.gradient} material-bubble animate-float animate-bubble-wobble opacity-20`}
-          style={{
-            width: bubble.size,
-            height: bubble.size,
-            left: `${bubble.left}%`,
-            animationDelay: `${bubble.delay}s`,
-            animationDuration: `${bubble.duration}s`,
-            bottom: "-60px",
-          }}
-        />
-      ))}
-    </div>
+            {/* Action */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <Button
+                onClick={() => getNfcAddress()}
+                size="lg"
+                className="skeu-button font-borel h-16 w-full rounded-3xl"
+              >
+                <Zap className="mr-2 h-5 w-5" />
+                <span className="-mb-2 align-text-bottom text-xl leading-0">Connect Wristband ✨</span>
+                <ArrowRight className="ml-2 h-5 w-5" />
+                {/* Button shimmer effect */}
+                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+              </Button>
+            </motion.div>
+          </>
+        )}
+
+        {isPending && (
+          <>
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="mb-12 text-center"
+            >
+              <h1
+                className="font-borel mb-4 text-4xl font-bold tracking-tight text-slate-800"
+                style={{
+                  textShadow: "0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
+                }}
+              >
+                Connecting...
+              </h1>
+              <p className="text-lg font-medium text-slate-600">Hold your wristband close to the back of your phone</p>
+            </motion.div>
+
+            {/* Scanning Animation */}
+            <NFCAnimation
+              size="md"
+              className="mb-12"
+            />
+          </>
+        )}
+
+        {!!nfcData && (
+          <>
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="mb-12 text-center"
+            >
+              <h1
+                className="font-borel mb-4 text-4xl font-bold tracking-tight text-slate-800"
+                style={{
+                  textShadow: "0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
+                }}
+              >
+                Connected! ✨
+              </h1>
+              <p className="text-lg font-medium text-slate-600">
+                You're all set to make instant connections by tapping wristbands
+              </p>
+            </motion.div>
+
+            {/* Success Icon */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="mb-12"
+            >
+              <div className="skeu-card mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-blue-100 text-6xl">
+                ✅
+              </div>
+            </motion.div>
+
+            {/* Success Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mb-8"
+            >
+              <Card className="skeu-card rounded-3xl border-slate-200 bg-gradient-to-br from-slate-50 to-white">
+                <CardHeader className="pb-3 text-center">
+                  <div className="mb-2 text-3xl">🔗</div>
+                  <CardTitle className="text-lg font-bold text-slate-800">Ready to Connect</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-center text-slate-600">
+                    Now when you meet someone with a Bubbles wristband, just tap them together to instantly connect!
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Address Display */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mb-8 w-full"
+            >
+              <div className="skeu-card rounded-2xl bg-slate-50 p-4">
+                <p className="mb-1 text-xs text-slate-500">Connected Address:</p>
+                <p className="font-mono text-sm break-all text-slate-700">{nfcData}</p>
+              </div>
+            </motion.div>
+
+            {/* Continue Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="space-y-4"
+            >
+              <Button
+                onClick={handleDone}
+                size="lg"
+                className="skeu-button font-borel h-16 w-full rounded-3xl"
+              >
+                <CheckCircle className="mr-2 h-5 w-5" />
+                <span className="-mb-2 align-text-bottom text-xl leading-0">Continue ✨</span>
+                <ArrowRight className="ml-2 h-5 w-5" />
+                {/* Button shimmer effect */}
+                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+              </Button>
+            </motion.div>
+          </>
+        )}
+        {/* Progress dots */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+          className="mt-12 flex justify-center"
+        >
+          <div className="flex gap-2">
+            {[0, 1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                  i <= 2 ? "bg-blue-500" : "bg-slate-300"
+                }`}
+              />
+            ))}
+          </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }
