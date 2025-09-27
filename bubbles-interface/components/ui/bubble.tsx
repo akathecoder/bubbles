@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { BubbleType } from "@/lib/bubbles";
+import Image from "next/image";
 
 export interface BubbleProps {
   type: BubbleType;
@@ -18,6 +19,14 @@ const sizeClasses = {
   md: "h-12 w-12 text-xl",
   lg: "h-16 w-16 text-2xl",
   xl: "h-20 w-20 text-3xl",
+};
+
+// Mapping of bubble types to transparent sticker assets
+const bubbleAssets: Record<string, string> = {
+  "Kind": "/heart-transparent.png",
+  "Insightful": "/brain-transparent.png",
+  "Cool": "/hug-transparent.png",
+  "Inspiring": "/heart-transparent.png", // fallback to heart for now
 };
 
 const Bubble = ({
@@ -43,37 +52,57 @@ const Bubble = ({
         )}
         onClick={onClick}
       >
-        {/* Premium variant effects */}
-        {variant === "premium" && (
-          <>
-            {/* Inner bubble with realistic depth */}
-            <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/40 via-transparent to-black/5" />
-            {/* Highlight spot */}
-            <div className={cn(
-              "absolute rounded-full bg-white/70 blur-sm",
-              size === "sm" ? "top-1 left-1 h-1 w-1" :
-              size === "md" ? "top-2 left-2 h-2 w-2" :
-              size === "lg" ? "top-3 left-3 h-3 w-3" :
-              "top-4 left-4 h-4 w-4"
-            )} />
-            {/* Secondary highlight */}
-            <div className={cn(
-              "absolute rounded-full bg-white/50 blur-sm",
-              size === "sm" ? "top-1.5 left-1.5 h-0.5 w-0.5" :
-              size === "md" ? "top-3 left-3 h-1 w-1" :
-              size === "lg" ? "top-4 left-4 h-1.5 w-1.5" :
-              "top-5 left-5 h-2 w-2"
-            )} />
-          </>
-        )}
+        {/* Layered bubble background */}
+        <div className="absolute inset-0 rounded-full">
+          {/* Base bubble texture */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/30 via-transparent to-black/10" />
+
+          {/* Premium variant effects */}
+          {variant === "premium" && (
+            <>
+              {/* Inner bubble with realistic depth */}
+              <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/40 via-transparent to-black/5" />
+              {/* Primary highlight spot */}
+              <div className={cn(
+                "absolute rounded-full bg-white/80 blur-sm",
+                size === "sm" ? "top-1 left-1 h-1 w-1" :
+                size === "md" ? "top-2 left-2 h-2 w-2" :
+                size === "lg" ? "top-3 left-3 h-3 w-3" :
+                "top-4 left-4 h-4 w-4"
+              )} />
+              {/* Secondary highlight */}
+              <div className={cn(
+                "absolute rounded-full bg-white/60 blur-sm",
+                size === "sm" ? "top-1.5 left-1.5 h-0.5 w-0.5" :
+                size === "md" ? "top-3 left-3 h-1 w-1" :
+                size === "lg" ? "top-4 left-4 h-1.5 w-1.5" :
+                "top-5 left-5 h-2 w-2"
+              )} />
+              {/* Rim lighting */}
+              <div className="absolute inset-0 rounded-full ring-1 ring-white/20 ring-inset" />
+            </>
+          )}
+        </div>
 
         {/* Default variant inner glow */}
         {variant === "default" && (
           <div className="absolute inset-1 rounded-full bg-white/20" />
         )}
 
-        {/* Emoji content */}
-        <span className="relative z-10 select-none">{type.emoji}</span>
+        {/* Sticker overlay (if available) or emoji fallback */}
+        {bubbleAssets[type.name] ? (
+          <div className="relative z-10 flex items-center justify-center">
+            <Image
+              src={bubbleAssets[type.name]}
+              alt={type.name}
+              width={size === "sm" ? 20 : size === "md" ? 28 : size === "lg" ? 36 : 44}
+              height={size === "sm" ? 20 : size === "md" ? 28 : size === "lg" ? 36 : 44}
+              className="drop-shadow-sm"
+            />
+          </div>
+        ) : (
+          <span className="relative z-10 select-none">{type.emoji}</span>
+        )}
 
         {/* Value badge */}
         {showValue && (

@@ -3,80 +3,72 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shuffle, Loader2 } from "lucide-react";
+import { ENS_CONFIG } from "@/lib/ens-config";
+import { useProfileData } from "@/lib/hooks/useProfileData";
+import { chains, tokens } from "@/lib/supported-tokens";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2, Shuffle } from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useProfileData } from "@/lib/hooks/useProfileData";
-import { chains, tokens, getTokenById } from "@/lib/supported-tokens";
-import { ENS_CONFIG } from "@/lib/ens-config";
 import { toast } from "sonner";
 
 const avatarOptions = ["👼", "👨‍💻", "👩‍⚖️", "🦹‍♀️", "🤖", "🧸"];
 
-const ensHandleSuggestions = [
-  "bubble-friend",
-  "kind-soul",
-  "joy-spreader",
-  "compliment-giver",
-  "happy-vibes",
-  "good-energy",
-];
-
 // Generate payment options from supported tokens
-const paymentOptions = chains.flatMap(chain =>
-  tokens[chain.id]?.map(token => ({
-    id: `${token.id}-${chain.id}`,
-    token: token.symbol,
-    tokenName: token.name,
-    chain: chain.name,
-    chainId: chain.id,
-    icon: chain.icon,
-    description: `${token.name} on ${chain.name}`,
-    address: token.address,
-  })) || []
+const paymentOptions = chains.flatMap(
+  (chain) =>
+    tokens[chain.id]?.map((token) => ({
+      id: `${token.id}-${chain.id}`,
+      token: token.symbol,
+      tokenName: token.name,
+      chain: chain.name,
+      chainId: chain.id,
+      icon: chain.icon,
+      description: `${token.name} on ${chain.name}`,
+      address: token.address,
+    })) || [],
 );
 
 export default function CreateProfilePage() {
   const router = useRouter();
   const [ensHandle, setEnsHandle] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState(avatarOptions[0]);
-  const [isGeneratingHandle, setIsGeneratingHandle] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(paymentOptions[0]);
 
   const { saveProfile, isRegistering, error } = useProfileData();
 
-  const generateRandomHandle = async () => {
-    setIsGeneratingHandle(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    const randomHandle = ensHandleSuggestions[Math.floor(Math.random() * ensHandleSuggestions.length)];
-    const randomNumber = Math.floor(Math.random() * 999) + 1;
-    setEnsHandle(`${randomHandle}-${randomNumber}`);
-    setIsGeneratingHandle(false);
-  };
+  const { mutate: handleContinue, isPending: isGeneratingHandle } = useMutation({
+    mutationKey: ["create-profile"],
+    mutationFn: async () => {
+      if (!ensHandle.trim()) {
+        toast.error("Please enter a handle");
+        return;
+      }
 
-  const handleContinue = async () => {
-    if (!ensHandle.trim()) {
-      toast.error("Please enter a handle");
-      return;
-    }
+      try {
+        const profileFormData = {
+          ensHandle: ensHandle.toLowerCase().trim(),
+          selectedAvatar,
+          selectedPayment,
+        };
 
-    try {
-      const profileFormData = {
-        ensHandle: ensHandle.trim(),
-        selectedAvatar,
-        selectedPayment,
-      };
-
-      await saveProfile(profileFormData);
-
-      // Success! Navigate to next step
+        await saveProfile(profileFormData);
+      } catch (error) {
+        // Error is already handled by the hook (toast.error)
+        console.error("Profile creation failed:", error);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Profile created successfully!");
       router.push("/onboarding/complete");
-    } catch (error) {
-      // Error is already handled by the hook (toast.error)
-      console.error("Profile creation failed:", error);
-    }
-  };
+    },
+    onError: (error) => {
+      const message = error instanceof Error ? error.message : "Profile creation failed";
+      toast.error(message);
+      console.error("Profile creation error:", error);
+    },
+  });
 
   return (
     <motion.div
@@ -163,7 +155,6 @@ export default function CreateProfilePage() {
                 </span>
               </div>
               <Button
-                onClick={generateRandomHandle}
                 disabled={isGeneratingHandle}
                 variant="outline"
                 size="icon"
@@ -226,7 +217,7 @@ export default function CreateProfilePage() {
           className="mt-8"
         >
           <Button
-            onClick={handleContinue}
+            onClick={() => handleContinue()}
             size="lg"
             className="skeu-button font-borel h-16 w-full rounded-3xl"
             disabled={!ensHandle.trim() || isRegistering}

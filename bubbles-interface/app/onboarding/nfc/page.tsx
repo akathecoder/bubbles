@@ -24,11 +24,12 @@ import { baseSepolia } from "viem/chains";
 import { usePublicClient } from "wagmi";
 import { useLocalStorage } from "usehooks-ts";
 import { privateKeyToAccount } from "viem/accounts";
+import useSessionKey from "@/lib/hooks/useSessionKey";
 
 export default function NFCPage() {
   const router = useRouter();
   const [nfcAddress, setNfcAddress] = useLocalStorage("nfcAddress", "");
-  const [nfcPkey, setNfcPkey] = useLocalStorage("nfcPkey", "");
+  const { sessionKey, setSessionKey, walletClient } = useSessionKey();
 
   const baseSepoliaPublicClient = usePublicClient({
     chainId: baseSepolia.id,
@@ -108,7 +109,7 @@ export default function NFCPage() {
     onSuccess: (data) => {
       toast.success("Wristband connected!");
       setNfcAddress(data.address);
-      setNfcPkey(data.pkey);
+      setSessionKey(data.pkey);
       return data;
     },
     onError: (error) => {
