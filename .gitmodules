@@ -1,0 +1,9 @@
+[submodule "ens_resolver/lib/forge-std"]
+	path = ens_resolver/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "ens_resolver/lib/openzeppelin-contracts"]
+	path = ens_resolver/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "temp/lib/forge-std"]
+	path = temp/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
