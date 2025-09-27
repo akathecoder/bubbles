@@ -5,16 +5,17 @@ import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 import { SuiWalletConnectors } from "@dynamic-labs/sui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { base, baseSepolia, mainnet } from "viem/chains";
+import { base, baseSepolia, mainnet, sepolia } from "viem/chains";
 import { createConfig, http, WagmiProvider } from "wagmi";
 
 const config = createConfig({
-  chains: [mainnet, base, baseSepolia],
+  chains: [mainnet, base, baseSepolia, sepolia],
   multiInjectedProviderDiscovery: false,
   transports: {
     [mainnet.id]: http(),
     [baseSepolia.id]: http(),
     [base.id]: http(),
+    [sepolia.id]: http(),
   },
 });
 
