@@ -3,55 +3,32 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { NFCAnimation } from "@/components/ui/nfc-animation";
-import { baseSepoliaPaymasterRpc } from "@/lib/utils";
+import { CommandResponse } from "@/lib/halo";
+import {
+  baseSepoliaBundlerRpc,
+  baseSepoliaPaymasterRpc,
+  entryPoint,
+  kernelAddresses,
+  kernelVersion,
+} from "@/lib/utils";
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
 import { useMutation } from "@tanstack/react-query";
-import { createZeroDevPaymasterClient } from "@zerodev/sdk";
+import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk";
 import { ArrowRight, CheckCircle, Zap } from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { toast } from "sonner";
-import { http } from "viem";
+import { createWalletClient, http, keccak256 } from "viem";
 import { baseSepolia } from "viem/chains";
 import { usePublicClient } from "wagmi";
+import { useLocalStorage } from "usehooks-ts";
+import { privateKeyToAccount } from "viem/accounts";
 
 export default function NFCPage() {
   const router = useRouter();
-  // const {
-  //   data: nfcPerms,
-  //   isLoading: isNfcPermsLoading,
-  //   error: nfcPermsError,
-  // } = useQuery({
-  //   queryKey: ["nfc perms"],
-  //   queryFn: async () => {
-  //     const ndef = new window.NDEFReader() as NDEFReader;
-  //     await ndef.scan({ signal: controller.signal });
-  //   },
-  // });
-
-  const {
-    data: nfcData,
-    isPending,
-    error: nfcError,
-    mutateAsync: getNfcAddress,
-  } = useMutation({
-    mutationKey: ["tap nfc"],
-    mutationFn: async () => {
-      const nfcAddress = (await execHaloCmdWeb({
-        name: "get_pkeys",
-      })) as Promise<{ etherAddresses: Record<string, `0x${string}`> }>;
-
-      return (await nfcAddress).etherAddresses["1"];
-    },
-    onSuccess: (data) => {
-      toast.success("Wristband connected!");
-      return data;
-    },
-    onError: (error) => {
-      toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
-    },
-  });
+  const [nfcAddress, setNfcAddress] = useLocalStorage("nfcAddress", "");
+  const [nfcPkey, setNfcPkey] = useLocalStorage("nfcPkey", "");
 
   const baseSepoliaPublicClient = usePublicClient({
     chainId: baseSepolia.id,
@@ -64,8 +41,83 @@ export default function NFCPage() {
     });
   }, [baseSepoliaPublicClient]);
 
+  const {
+    data: nfcData,
+    isPending,
+    error: nfcError,
+    mutateAsync: getNfcAddress,
+  } = useMutation({
+    mutationKey: ["tap nfc"],
+    mutationFn: async () => {
+      if (!baseSepoliaPublicClient) throw new Error("No public client");
+      const paymasterClient = createZeroDevPaymasterClient({
+        chain: baseSepolia,
+        transport: http(baseSepoliaPaymasterRpc),
+      });
+      if (!baseSepoliaPaymasterClient) throw new Error("No paymaster client");
+      if (!paymasterClient) throw new Error("No paymaster client");
+      // const nfcAddress = (await execHaloCmdWeb({
+      //   name: "get_pkeys",
+      // })) as Promise<{ etherAddresses: Record<string, `0x${string}`> }>;
+      console.log(keccak256("0xb00b1e5"));
+
+      const signature = (await execHaloCmdWeb({
+        name: "sign",
+        keyNo: 1,
+        message: keccak256("0xb00b1e5"),
+      })) as CommandResponse;
+
+      const pkey = keccak256(signature.signature.ether) as `0x${string}`;
+      const sessionKeyAccount = privateKeyToAccount(pkey);
+
+      const sessionKeyKernelAccount = await createKernelAccount(baseSepoliaPublicClient, {
+        entryPoint: entryPoint,
+        kernelVersion: kernelVersion,
+        eip7702Account: sessionKeyAccount,
+        eip7702Auth: await sessionKeyAccount.signAuthorization({
+          address: kernelAddresses.accountImplementationAddress,
+          chainId: baseSepolia.id,
+          nonce: 0,
+        }),
+      });
+
+      const sessionKeyKernelAccountClient = createKernelAccountClient({
+        account: sessionKeyKernelAccount,
+        chain: baseSepolia,
+        bundlerTransport: http(baseSepoliaBundlerRpc),
+        paymaster: baseSepoliaPaymasterClient,
+        client: baseSepoliaPublicClient,
+      });
+
+      const tx = await sessionKeyKernelAccountClient.sendTransaction({
+        calls: [
+          {
+            to: "0x0000000000000000000000000000000000000000",
+            value: BigInt(0),
+          },
+        ],
+      });
+
+      console.log("7702 tx hash:", tx);
+
+      return {
+        address: signature.etherAddress,
+        pkey: pkey,
+      };
+    },
+    onSuccess: (data) => {
+      toast.success("Wristband connected!");
+      setNfcAddress(data.address);
+      setNfcPkey(data.pkey);
+      return data;
+    },
+    onError: (error) => {
+      toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    },
+  });
+
   const handleDone = () => {
-    router.push("/onboarding/complete");
+    router.push("/onboarding/create-profile");
   };
 
   return (
@@ -235,7 +287,9 @@ export default function NFCPage() {
             >
               <div className="skeu-card rounded-2xl bg-slate-50 p-4">
                 <p className="mb-1 text-xs text-slate-500">Connected Address:</p>
-                <p className="font-mono text-sm break-all text-slate-700">{nfcData}</p>
+                <p className="font-mono text-sm break-all text-slate-700">
+                  {nfcData.address.slice(0, 6)}...{nfcData.address.slice(-4)}
+                </p>
               </div>
             </motion.div>
 
@@ -272,7 +326,7 @@ export default function NFCPage() {
               <div
                 key={i}
                 className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                  i <= 2 ? "bg-blue-500" : "bg-slate-300"
+                  i <= 0 ? "bg-blue-500" : "bg-slate-300"
                 }`}
               />
             ))}

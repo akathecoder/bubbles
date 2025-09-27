@@ -3,10 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shuffle } from "lucide-react";
+import { Shuffle, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useProfileData } from "@/lib/hooks/useProfileData";
+import { chains, tokens, getTokenById } from "@/lib/supported-tokens";
+import { ENS_CONFIG } from "@/lib/ens-config";
+import { toast } from "sonner";
 
 const avatarOptions = ["👼", "👨‍💻", "👩‍⚖️", "🦹‍♀️", "🤖", "🧸"];
 
@@ -19,29 +23,19 @@ const ensHandleSuggestions = [
   "good-energy",
 ];
 
-const paymentOptions = [
-  {
-    id: "usdc-base",
-    token: "USDC",
-    chain: "Base",
-    icon: "🔵",
-    description: "USD Coin on Base",
-  },
-  {
-    id: "usdt-arbitrum",
-    token: "USDT",
-    chain: "Arbitrum",
-    icon: "🔺",
-    description: "Tether USD on Arbitrum",
-  },
-  {
-    id: "pyusd-arbitrum",
-    token: "PYUSD",
-    chain: "Arbitrum",
-    icon: "🔺",
-    description: "PayPal USD on Arbitrum",
-  },
-];
+// Generate payment options from supported tokens
+const paymentOptions = chains.flatMap(chain =>
+  tokens[chain.id]?.map(token => ({
+    id: `${token.id}-${chain.id}`,
+    token: token.symbol,
+    tokenName: token.name,
+    chain: chain.name,
+    chainId: chain.id,
+    icon: chain.icon,
+    description: `${token.name} on ${chain.name}`,
+    address: token.address,
+  })) || []
+);
 
 export default function CreateProfilePage() {
   const router = useRouter();
@@ -49,6 +43,8 @@ export default function CreateProfilePage() {
   const [selectedAvatar, setSelectedAvatar] = useState(avatarOptions[0]);
   const [isGeneratingHandle, setIsGeneratingHandle] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(paymentOptions[0]);
+
+  const { saveProfile, isRegistering, error } = useProfileData();
 
   const generateRandomHandle = async () => {
     setIsGeneratingHandle(true);
@@ -59,8 +55,27 @@ export default function CreateProfilePage() {
     setIsGeneratingHandle(false);
   };
 
-  const handleContinue = () => {
-    router.push("/onboarding/nfc");
+  const handleContinue = async () => {
+    if (!ensHandle.trim()) {
+      toast.error("Please enter a handle");
+      return;
+    }
+
+    try {
+      const profileFormData = {
+        ensHandle: ensHandle.trim(),
+        selectedAvatar,
+        selectedPayment,
+      };
+
+      await saveProfile(profileFormData);
+
+      // Success! Navigate to next step
+      router.push("/onboarding/complete");
+    } catch (error) {
+      // Error is already handled by the hook (toast.error)
+      console.error("Profile creation failed:", error);
+    }
   };
 
   return (
@@ -144,7 +159,7 @@ export default function CreateProfilePage() {
                   className="h-12 rounded-xl border-slate-200 pr-12 text-base"
                 />
                 <span className="absolute top-1/2 right-3 -translate-y-1/2 text-sm font-medium text-slate-500">
-                  .pay-bubbles.eth
+                  .{ENS_CONFIG.DOMAIN}
                 </span>
               </div>
               <Button
@@ -214,11 +229,20 @@ export default function CreateProfilePage() {
             onClick={handleContinue}
             size="lg"
             className="skeu-button font-borel h-16 w-full rounded-3xl"
-            disabled={!ensHandle.trim()}
+            disabled={!ensHandle.trim() || isRegistering}
           >
-            <span className="-mb-4 align-text-bottom text-xl leading-0">Continue ✨</span>
+            {isRegistering ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                <span className="-mb-4 align-text-bottom text-xl leading-0">Creating Profile...</span>
+              </>
+            ) : (
+              <span className="-mb-4 align-text-bottom text-xl leading-0">Continue ✨</span>
+            )}
             {/* Button shimmer effect */}
-            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+            {!isRegistering && (
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+            )}
           </Button>
         </motion.div>
 

@@ -1,25 +1,16 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Sparkles, Heart, Zap, Waves } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { useDynamicContext, useSocialAccounts } from "@dynamic-labs/sdk-react-core";
-import { ProviderEnum } from "@dynamic-labs/types";
-import { redirect } from "next/navigation";
-import { memo } from "react";
+import { useRouter } from "next/navigation";
 import { HeroBubbles } from "../components/hero-bubbles";
+import { Button } from "../components/ui/button";
 
 function WelcomeScreen() {
-  const { error, isProcessing, signInWithSocialAccount } = useSocialAccounts();
-  const { user } = useDynamicContext();
+  const router = useRouter();
 
   const handleProceed = () => {
-    signInWithSocialAccount(ProviderEnum.Google);
+    router.push("/onboarding/nfc");
   };
-
-  if (user) {
-    redirect("/onboarding/create-profile");
-  }
 
   return (
     <motion.div
@@ -32,43 +23,6 @@ function WelcomeScreen() {
       {/* Premium background elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30" />
       <div className="texture-noise absolute top-0 left-0 h-full w-full" />
-
-      {/* Floating ambient bubbles */}
-      {/* {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          className={`skeu-bubble absolute rounded-full ${
-            i % 6 === 0
-              ? "bubble-pink"
-              : i % 6 === 1
-                ? "bubble-blue"
-                : i % 6 === 2
-                  ? "bubble-green"
-                  : i % 6 === 3
-                    ? "bubble-orange"
-                    : i % 6 === 4
-                      ? "bubble-purple"
-                      : "bubble-teal"
-          }`}
-          style={{
-            width: `${20 + i * 8}px`,
-            height: `${20 + i * 8}px`,
-            top: `${10 + i * 15}%`,
-            left: `${5 + i * 15}%`,
-          }}
-          animate={{
-            y: [0, -20, 0],
-            x: [0, 10, 0],
-            scale: [1, 1.05, 1],
-          }}
-          transition={{
-            duration: 6 + i,
-            repeat: Number.POSITIVE_INFINITY,
-            delay: i * 0.8,
-            ease: "easeInOut",
-          }}
-        />
-      ))} */}
 
       {/* Main content */}
       <motion.div
