@@ -67,16 +67,6 @@ export function SendBubbleSheet({
 
       // Call callback if provided
       onSendComplete?.(sendData);
-
-      // Auto close after celebration
-      setTimeout(() => {
-        setShowSuccess(false);
-        onOpenChange(false);
-        // Reset form
-        setBubbleAmount(1);
-        setNote("");
-        setSelectedBubbleType(BUBBLE_TYPES[0]);
-      }, 3000);
     },
     onError: () => {
       setIsSending(false);
@@ -204,28 +194,42 @@ export function SendBubbleSheet({
           >
             {/* Floating Bubbles Animation */}
             <div className="relative h-32 overflow-hidden">
-              {[...Array(12)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ y: 100, opacity: 0, scale: 0 }}
-                  animate={{
-                    y: -100,
-                    opacity: [0, 1, 1, 0],
-                    scale: [0, 1, 1, 0]
-                  }}
-                  transition={{
-                    duration: 2,
-                    delay: i * 0.1,
-                    ease: "easeOut"
-                  }}
-                  className="absolute"
-                  style={{
-                    left: `${10 + (i % 8) * 10}%`,
-                  }}
-                >
-                  <Bubble type={selectedBubbleType} size="sm" variant="default" />
-                </motion.div>
-              ))}
+              {[...Array(15)].map((_, i) => {
+                const randomX = Math.random() * 80 + 10; // 10% to 90%
+                const randomDelay = Math.random() * 1.5; // 0 to 1.5s delay
+                const randomDuration = 1.5 + Math.random() * 1; // 1.5s to 2.5s duration
+                const randomScale = 0.8 + Math.random() * 0.4; // 0.8 to 1.2 scale
+
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{
+                      y: 150,
+                      opacity: 0,
+                      scale: 0,
+                      x: randomX + '%'
+                    }}
+                    animate={{
+                      y: -150,
+                      opacity: [0, 1, 1, 0],
+                      scale: [0, randomScale, randomScale, 0]
+                    }}
+                    transition={{
+                      duration: randomDuration,
+                      delay: randomDelay,
+                      ease: "easeOut",
+                      repeat: Infinity,
+                      repeatDelay: Math.random() * 2 + 1
+                    }}
+                    className="absolute"
+                    style={{
+                      left: `${randomX}%`,
+                    }}
+                  >
+                    <Bubble type={selectedBubbleType} size="sm" variant="default" />
+                  </motion.div>
+                );
+              })}
             </div>
 
             <motion.div

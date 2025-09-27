@@ -2,8 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { RainbowButton } from "@/components/ui/rainbow-button";
-import { TextAnimate } from "@/components/ui/text-animate";
 import { NFCAnimation } from "@/components/ui/nfc-animation";
 import { baseSepoliaPaymasterRpc } from "@/lib/utils";
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
@@ -11,8 +9,8 @@ import { useMutation } from "@tanstack/react-query";
 import { createZeroDevPaymasterClient } from "@zerodev/sdk";
 import { ArrowRight, CheckCircle, Zap } from "lucide-react";
 import { motion } from "motion/react";
-import { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 import { toast } from "sonner";
 import { http } from "viem";
 import { baseSepolia } from "viem/chains";
@@ -44,30 +42,6 @@ export default function NFCPage() {
         name: "get_pkeys",
       })) as Promise<{ etherAddresses: Record<string, `0x${string}`> }>;
 
-      // const nfcAddress = await halo.getKey();
-      // if (!nfcAddress) {
-      //   throw new Error("Could not scan the NFC");
-      // }
-      // window.alert(JSON.stringify(nfcAddress, null, 4));
-
-      // toast.info(nfcAddress);
-
-      // const res = await fetch("/api/deployer", {
-      //   body: JSON.stringify({
-      //     chain: "4801",
-      //     owner: ownerAddr,
-      //     signers: [nfcAddress],
-      //   }),
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      // });
-
-      // const data = await res.json();
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-      // return data.account;
       return (await nfcAddress).etherAddresses["1"];
     },
     onSuccess: (data) => {
@@ -89,129 +63,6 @@ export default function NFCPage() {
       transport: http(baseSepoliaPaymasterRpc),
     });
   }, [baseSepoliaPublicClient]);
-
-  const {
-    mutate: sign7702,
-    error: sign7702Error,
-    data: sign7702Data,
-    isPending: isSign7702Pending,
-  } = useMutation({
-    mutationFn: async () => {
-      if (!baseSepoliaPublicClient) throw new Error("No public client");
-      if (!baseSepoliaPaymasterClient) throw new Error("No paymaster client");
-      // const nfcData = await getNfcAddress();
-      // const authorisationData = await prepareAuthorization(baseSepoliaPublicClient, {
-      //   account: nfcData as `0x${string}`,
-      //   address: kernelAddresses.accountImplementationAddress,
-      // });
-
-      // const authRequest = {
-      //   chainId: baseSepolia.id,
-      //   address: kernelAddresses.accountImplementationAddress,
-      //   nonce: 0,
-      // };
-      // const hash = hashAuthorization(authRequest);
-      // const signature = (await execHaloCmdWeb({
-      //   name: "sign",
-      //   keyNo: 1,
-      //   digest: hash.slice(2),
-      // })) as CommandResponse;
-      // console.log("auth", { signature });
-
-      // const authorisationZerodevData: SignedAuthorization = {
-      //   ...authRequest,
-      //   r: `0x${signature.signature.raw.r}`,
-      //   s: `0x${signature.signature.raw.s}`,
-      //   v: BigInt(signature.signature.raw.v),
-      // };
-
-      // const verified = await verifyAuthorization({
-      //   authorization: authorisationZerodevData,
-      //   address: signature.etherAddress,
-      // });
-
-      // console.log("AUTH VERIFIED", verified);
-
-      // const _sessionPrivateKey = generatePrivateKey();
-      // const sessionAccount = privateKeyToAccount(_sessionPrivateKey as `0x${string}`);
-      // const sessionKeySigner = await toECDSASigner({
-      //   signer: sessionAccount,
-      // });
-      // const permissionPlugin = await toPermissionValidator(baseSepoliaPublicClient, {
-      //   entryPoint: entryPoint,
-      //   kernelVersion: kernelVersion,
-      //   signer: sessionKeySigner,
-      //   policies: [toSudoPolicy({})],
-      // });
-      // console.log("PERMISSION PLUGIN CREATED", permissionPlugin);
-      // const validatorNonce = await getKernelV3Nonce(baseSepoliaPublicClient, signature.etherAddress);
-      // const typedData = await getPluginsEnableTypedData({
-      //   accountAddress,
-      //   chainId,
-      //   kernelVersion: version,
-      //   action,
-      //   hook,
-      //   validator: regular,
-      //   validatorNonce,
-      // });
-      // const sessionkernelAccount = await createKernelAccount(baseSepoliaPublicClient, {
-      //   // eip7702Account: nfcData,
-      //   address: signature.etherAddress as `0x${string}`,
-      //   entryPoint: entryPoint,
-      //   kernelVersion: kernelVersion,
-      //   eip7702Auth: authorisationZerodevData,
-      //   plugins: {
-      //     regular: permissionPlugin,
-      //   },
-      // });
-
-      // console.log("KERNEL ACCOUNT CREATED", sessionkernelAccount);
-
-      // const kernelAccountClient = createKernelAccountClient({
-      //   account: sessionkernelAccount,
-      //   chain: baseSepolia,
-      //   bundlerTransport: http(baseSepoliaBundlerRpc),
-      //   paymaster: baseSepoliaPaymasterClient,
-      //   client: baseSepoliaPublicClient,
-      // });
-
-      // console.log("kernelAccountClient created", kernelAccountClient);
-
-      // const tx = await kernelAccountClient.sendTransaction({
-      //   calls: [
-      //     {
-      //       to: zeroAddress,
-      //       value: BigInt(0),
-      //     },
-      //   ],
-      // });
-
-      // window.alert(`7702 tx hash: ${tx}`);
-
-      // const sessionKeyKernelAccount = await createKernelAccount(publicClient, {
-      //   entryPoint,
-      //   eip7702Account: signer,
-      //   plugins: {
-      //     regular: permissionPlugin,
-      //   },
-      //   kernelVersion: kernelVersion,
-      //   address: masterKernelAccountClient.account.address,
-      // });
-      // return signature;
-    },
-    onError: (error) => {
-      toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
-      console.error(error);
-    },
-    onSuccess: (data) => {
-      toast.success("7702 Signed!");
-      return data;
-    },
-  });
-
-  const handleSkip = () => {
-    router.push("/onboarding/complete");
-  };
 
   const handleDone = () => {
     router.push("/onboarding/complete");
@@ -431,3 +282,122 @@ export default function NFCPage() {
     </motion.div>
   );
 }
+
+// const {
+//   mutate: sign7702,
+//   error: sign7702Error,
+//   data: sign7702Data,
+//   isPending: isSign7702Pending,
+// } = useMutation({
+//   mutationFn: async () => {
+//     if (!baseSepoliaPublicClient) throw new Error("No public client");
+//     if (!baseSepoliaPaymasterClient) throw new Error("No paymaster client");
+//     // const nfcData = await getNfcAddress();
+//     // const authorisationData = await prepareAuthorization(baseSepoliaPublicClient, {
+//     //   account: nfcData as `0x${string}`,
+//     //   address: kernelAddresses.accountImplementationAddress,
+//     // });
+
+//     // const authRequest = {
+//     //   chainId: baseSepolia.id,
+//     //   address: kernelAddresses.accountImplementationAddress,
+//     //   nonce: 0,
+//     // };
+//     // const hash = hashAuthorization(authRequest);
+//     // const signature = (await execHaloCmdWeb({
+//     //   name: "sign",
+//     //   keyNo: 1,
+//     //   digest: hash.slice(2),
+//     // })) as CommandResponse;
+//     // console.log("auth", { signature });
+
+//     // const authorisationZerodevData: SignedAuthorization = {
+//     //   ...authRequest,
+//     //   r: `0x${signature.signature.raw.r}`,
+//     //   s: `0x${signature.signature.raw.s}`,
+//     //   v: BigInt(signature.signature.raw.v),
+//     // };
+
+//     // const verified = await verifyAuthorization({
+//     //   authorization: authorisationZerodevData,
+//     //   address: signature.etherAddress,
+//     // });
+
+//     // console.log("AUTH VERIFIED", verified);
+
+//     // const _sessionPrivateKey = generatePrivateKey();
+//     // const sessionAccount = privateKeyToAccount(_sessionPrivateKey as `0x${string}`);
+//     // const sessionKeySigner = await toECDSASigner({
+//     //   signer: sessionAccount,
+//     // });
+//     // const permissionPlugin = await toPermissionValidator(baseSepoliaPublicClient, {
+//     //   entryPoint: entryPoint,
+//     //   kernelVersion: kernelVersion,
+//     //   signer: sessionKeySigner,
+//     //   policies: [toSudoPolicy({})],
+//     // });
+//     // console.log("PERMISSION PLUGIN CREATED", permissionPlugin);
+//     // const validatorNonce = await getKernelV3Nonce(baseSepoliaPublicClient, signature.etherAddress);
+//     // const typedData = await getPluginsEnableTypedData({
+//     //   accountAddress,
+//     //   chainId,
+//     //   kernelVersion: version,
+//     //   action,
+//     //   hook,
+//     //   validator: regular,
+//     //   validatorNonce,
+//     // });
+//     // const sessionkernelAccount = await createKernelAccount(baseSepoliaPublicClient, {
+//     //   // eip7702Account: nfcData,
+//     //   address: signature.etherAddress as `0x${string}`,
+//     //   entryPoint: entryPoint,
+//     //   kernelVersion: kernelVersion,
+//     //   eip7702Auth: authorisationZerodevData,
+//     //   plugins: {
+//     //     regular: permissionPlugin,
+//     //   },
+//     // });
+
+//     // console.log("KERNEL ACCOUNT CREATED", sessionkernelAccount);
+
+//     // const kernelAccountClient = createKernelAccountClient({
+//     //   account: sessionkernelAccount,
+//     //   chain: baseSepolia,
+//     //   bundlerTransport: http(baseSepoliaBundlerRpc),
+//     //   paymaster: baseSepoliaPaymasterClient,
+//     //   client: baseSepoliaPublicClient,
+//     // });
+
+//     // console.log("kernelAccountClient created", kernelAccountClient);
+
+//     // const tx = await kernelAccountClient.sendTransaction({
+//     //   calls: [
+//     //     {
+//     //       to: zeroAddress,
+//     //       value: BigInt(0),
+//     //     },
+//     //   ],
+//     // });
+
+//     // window.alert(`7702 tx hash: ${tx}`);
+
+//     // const sessionKeyKernelAccount = await createKernelAccount(publicClient, {
+//     //   entryPoint,
+//     //   eip7702Account: signer,
+//     //   plugins: {
+//     //     regular: permissionPlugin,
+//     //   },
+//     //   kernelVersion: kernelVersion,
+//     //   address: masterKernelAccountClient.account.address,
+//     // });
+//     // return signature;
+//   },
+//   onError: (error) => {
+//     toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+//     console.error(error);
+//   },
+//   onSuccess: (data) => {
+//     toast.success("7702 Signed!");
+//     return data;
+//   },
+// });
