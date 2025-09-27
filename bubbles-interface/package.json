@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@1inch/cross-chain-sdk": "^1.0.2",
     "@arx-research/libhalo": "^1.15.0",
     "@dynamic-labs/bitcoin": "^4.32.1",
     "@dynamic-labs/ethereum": "^4.32.1",
@@ -35,6 +36,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
+    "ethers": "^6.15.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.544.0",
     "motion": "^12.23.22",
@@ -47,7 +49,8 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "viem": "^2.37.8",
-    "wagmi": "^2.17.5"
+    "wagmi": "^2.17.5",
+    "web3": "^4.16.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
