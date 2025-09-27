@@ -15,7 +15,7 @@ const RESOLVE_ABI = [
 ];
 
 const DB: Record<string, string> = {
-  "sparsh.eth": "0x1234567890abcdef1234567890abcdef12345678",
+  "sparsh.eth": "0x1fE1F85EE8941BE5F93A2d5175a6B412Fb1e7AEE",
 };
 
 export function getEnsAddressUsingLookup(
