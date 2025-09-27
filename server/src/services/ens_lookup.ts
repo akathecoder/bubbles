@@ -66,6 +66,8 @@ export async function getEnsAddressUsingCCIPLookup(
       throw new Error("ENS name not found");
     }
 
+    console.info({ name, query, result });
+
     const encodedResponse = await encodeEnsOffchainResponse(
       {
         sender,
