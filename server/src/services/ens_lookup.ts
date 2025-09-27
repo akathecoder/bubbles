@@ -100,17 +100,22 @@ export async function getNames() {
   const names = await db.selectFrom("names").selectAll().execute();
   const parsedNames = parseNameFromDb(names);
 
+  console.log(parsedNames);
+
   // Simplify the response format
-  const formattedNames = parsedNames.reduce((acc, name) => {
-    return {
-      ...acc,
-      [name.name]: {
+  const formattedNames = parsedNames.reduce(
+    (acc: Record<string, any>, name) => {
+      acc[name.name] = {
         addresses: name.addresses,
         texts: name.texts,
         contenthash: name.contenthash,
-      },
-    };
-  }, {});
+      };
+      return acc;
+    },
+    {}
+  );
+
+  console.log(formattedNames);
 
   return formattedNames;
 }
@@ -154,7 +159,10 @@ export async function setName(c: Context): Promise<Response> {
   const now = Math.floor(Date.now());
 
   if (expiration < now) {
-    const response = { success: false, error: "Signature expired" };
+    const response = {
+      success: false,
+      error: "Signature expired",
+    };
     return Response.json(response, { status: 401 });
   }
 

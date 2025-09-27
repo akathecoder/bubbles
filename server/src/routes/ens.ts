@@ -37,15 +37,15 @@ ensRoutes.get("/lookup/:name/:data", async (c) => {
   }
 });
 
-ensRoutes.get("/get/:name", (c) => {
+ensRoutes.get("/get/:name", async (c) => {
   const { name } = c.req.param();
-  const response = getName(name);
-  return c.json({ response });
+  const response = await getName(name);
+  return c.json(response);
 });
 
-ensRoutes.get("/names", (c) => {
-  const res = getNames();
-  return c.json({ res });
+ensRoutes.get("/names", async (c) => {
+  const res = await getNames();
+  return c.json(res);
 });
 
 ensRoutes.post("/set", setName);
