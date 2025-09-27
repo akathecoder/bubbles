@@ -1,174 +1,211 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { DynamicWidget, useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { TextAnimate } from "@/components/ui/text-animate";
-import { RainbowButton } from "@/components/ui/rainbow-button";
-import { useRouter } from "next/navigation";
-import { Users, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { motion } from "motion/react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Mail, Wallet, ArrowLeft, Sparkles } from "lucide-react";
 
-export default function AuthPage() {
-  const router = useRouter();
-  const { user, primaryWallet } = useDynamicContext();
-  const isAuthenticated = !!user;
-
-  // Auto-redirect when authentication succeeds
-  useEffect(() => {
-    if (isAuthenticated) {
-      // Small delay to show success state
-      const timer = setTimeout(() => {
-        router.push('/onboarding/profile');
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, router]);
-
-  const handleNext = () => {
-    router.push('/onboarding/profile');
-  };
-
-  return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Enhanced Floating Bubbles Background */}
-      <FloatingBubbles />
-
-      {/* Mobile-First Container */}
-      <div className="relative z-10 min-h-screen flex flex-col">
-        {/* Header */}
-        <div className="pt-8 pb-4 px-6">
-          <div className="flex items-center justify-between">
-            <div className="text-3xl animate-gentle-bounce">🫧</div>
-            <div className="text-sm text-muted-foreground font-medium">
-              Step 2 of 4
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mt-4">
-            <div className="h-3 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
-              <div
-                className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500 shadow-lg"
-                style={{ width: '50%' }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="flex-1 px-6 pb-6">
-          <div className="h-full flex flex-col justify-between min-h-[80vh] space-y-8">
-            {/* Header */}
-            <div className="text-center space-y-6 pt-8">
-              <div className="text-5xl mb-4">🔐</div>
-
-              <div className="space-y-3">
-                <TextAnimate
-                  animation="blurInUp"
-                  className="text-2xl font-bold text-primary"
-                >
-                  Let's get you connected
-                </TextAnimate>
-
-                <TextAnimate
-                  animation="slideUp"
-                  delay={0.3}
-                  className="text-base text-muted-foreground max-w-sm mx-auto leading-relaxed"
-                >
-                  Choose your preferred way to sign in. We make crypto simple!
-                </TextAnimate>
-              </div>
-            </div>
-
-            {/* Auth Widget */}
-            <div className="flex-1 flex flex-col justify-center">
-              <div className="glass-card rounded-3xl p-6 shadow-xl">
-                <div className="min-h-[240px] flex items-center justify-center">
-                  <DynamicWidget />
-                </div>
-              </div>
-
-              {/* Success State */}
-              {isAuthenticated && (
-                <div className="mt-6 text-center p-6 glass-card rounded-3xl">
-                  <TextAnimate animation="scaleUp" className="text-4xl mb-3">
-                    🎉
-                  </TextAnimate>
-                  <TextAnimate animation="blurInUp" delay={0.2} className="text-lg font-semibold text-primary mb-2">
-                    You're connected!
-                  </TextAnimate>
-                  <TextAnimate animation="slideUp" delay={0.4} className="text-sm text-muted-foreground">
-                    Redirecting to profile setup...
-                  </TextAnimate>
-                </div>
-              )}
-            </div>
-
-            {/* Bottom Action */}
-            <div className="pb-8 space-y-4">
-              {isAuthenticated ? (
-                <RainbowButton onClick={handleNext} size="lg" className="w-full h-14 text-lg font-semibold rounded-2xl">
-                  <Users className="w-5 h-5 mr-2" />
-                  Set Up Profile
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </RainbowButton>
-              ) : (
-                <div className="text-center space-y-3">
-                  <div className="p-4 bg-muted/50 rounded-2xl border border-dashed border-muted-foreground/30">
-                    <TextAnimate animation="fadeIn" className="text-sm text-muted-foreground">
-                      ☝️ Choose an option above to continue
-                    </TextAnimate>
-                  </div>
-                </div>
-              )}
-
-              <TextAnimate
-                animation="fadeIn"
-                delay={0.5}
-                className="text-xs text-muted-foreground text-center"
-              >
-                Your wallet stays secure. We never store your private keys 🔒
-              </TextAnimate>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+interface AuthModalProps {
+  onNext: () => void;
+  onUpdateUser: (data: any) => void;
 }
 
-// Enhanced Floating Bubbles Component
-function FloatingBubbles() {
-  const bubbles = Array.from({ length: 10 }, (_, i) => ({
-    id: i,
-    size: Math.random() * 50 + 25,
-    left: Math.random() * 100,
-    delay: Math.random() * 6,
-    duration: Math.random() * 4 + 5,
-    gradient: [
-      'bubble-gradient-pink',
-      'bubble-gradient-blue',
-      'bubble-gradient-purple',
-      'bubble-gradient-green',
-      'bubble-gradient-yellow'
-    ][Math.floor(Math.random() * 5)],
-  }));
+export function AuthModal({ onNext, onUpdateUser }: AuthModalProps) {
+  const [authMethod, setAuthMethod] = useState<"email" | "wallet" | null>(null);
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleEmailAuth = async () => {
+    if (!email) return;
+    setIsLoading(true);
+
+    // Simulate auth process
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    onUpdateUser({ email });
+    setIsLoading(false);
+    onNext();
+  };
+
+  const handleWalletAuth = async () => {
+    setIsLoading(true);
+
+    // Simulate wallet connection
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    onUpdateUser({
+      email: "wallet@user.eth",
+      walletConnected: true,
+    });
+    setIsLoading(false);
+    onNext();
+  };
+
+  if (!authMethod) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className="flex min-h-screen items-center justify-center p-6"
+      >
+        <Card className="glass-effect bubble-shadow w-full max-w-md p-8">
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8 text-center"
+          >
+            <div className="from-primary to-secondary mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br">
+              <Sparkles className="h-8 w-8 text-white" />
+            </div>
+            <h2 className="mb-2 text-2xl font-bold">Welcome to Bubbles!</h2>
+            <p className="text-muted-foreground">Choose how you'd like to get started</p>
+          </motion.div>
+
+          <div className="space-y-4">
+            <motion.div
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Button
+                onClick={() => setAuthMethod("email")}
+                variant="outline"
+                size="lg"
+                className="hover:bg-primary/5 hover:border-primary/30 w-full justify-start gap-4 rounded-2xl p-6 transition-all duration-300"
+              >
+                <div className="from-primary to-secondary flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br">
+                  <Mail className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <div className="font-semibold">Continue with Email</div>
+                  <div className="text-muted-foreground text-sm">Quick and secure with passkey</div>
+                </div>
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Button
+                onClick={() => setAuthMethod("wallet")}
+                variant="outline"
+                size="lg"
+                className="hover:bg-secondary/5 hover:border-secondary/30 w-full justify-start gap-4 rounded-2xl p-6 transition-all duration-300"
+              >
+                <div className="from-secondary to-accent flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br">
+                  <Wallet className="h-5 w-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <div className="font-semibold">Continue with Wallet</div>
+                  <div className="text-muted-foreground text-sm">Connect your existing wallet</div>
+                </div>
+              </Button>
+            </motion.div>
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-muted-foreground mt-6 text-center text-xs"
+          >
+            By continuing, you agree to our Terms of Service and Privacy Policy
+          </motion.p>
+        </Card>
+      </motion.div>
+    );
+  }
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {bubbles.map((bubble) => (
-        <div
-          key={bubble.id}
-          className={`absolute rounded-full ${bubble.gradient} material-bubble animate-float animate-bubble-wobble opacity-25`}
-          style={{
-            width: bubble.size,
-            height: bubble.size,
-            left: `${bubble.left}%`,
-            animationDelay: `${bubble.delay}s`,
-            animationDuration: `${bubble.duration}s`,
-            bottom: '-80px',
-          }}
-        />
-      ))}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="flex min-h-screen items-center justify-center p-6"
+    >
+      <Card className="glass-effect bubble-shadow w-full max-w-md p-8">
+        <div className="mb-6 flex items-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setAuthMethod(null)}
+            className="mr-2 p-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h2 className="text-xl font-semibold">{authMethod === "email" ? "Sign in with Email" : "Connect Wallet"}</h2>
+        </div>
+
+        {authMethod === "email" ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <div>
+              <label className="mb-2 block text-sm font-medium">Email Address</label>
+              <Input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="rounded-xl"
+              />
+            </div>
+
+            <Button
+              onClick={handleEmailAuth}
+              disabled={!email || isLoading}
+              className="from-primary to-secondary w-full rounded-xl bg-gradient-to-r transition-all duration-300 hover:shadow-lg"
+              size="lg"
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Creating account...
+                </div>
+              ) : (
+                "Continue with Email"
+              )}
+            </Button>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <div className="py-8 text-center">
+              <div className="from-secondary to-accent mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br">
+                <Wallet className="h-8 w-8 text-white" />
+              </div>
+              <p className="text-muted-foreground">Connect your wallet to get started with Bubbles</p>
+            </div>
+
+            <Button
+              onClick={handleWalletAuth}
+              disabled={isLoading}
+              className="from-secondary to-accent w-full rounded-xl bg-gradient-to-r transition-all duration-300 hover:shadow-lg"
+              size="lg"
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Connecting...
+                </div>
+              ) : (
+                "Connect Wallet"
+              )}
+            </Button>
+          </motion.div>
+        )}
+      </Card>
+    </motion.div>
   );
 }

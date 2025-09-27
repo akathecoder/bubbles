@@ -15,6 +15,7 @@
     "@dynamic-labs/sdk-react-core": "^4.32.1",
     "@dynamic-labs/solana": "^4.32.1",
     "@dynamic-labs/sui": "^4.32.1",
+    "@dynamic-labs/types": "^4.33.0",
     "@dynamic-labs/wagmi-connector": "^4.32.1",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dropdown-menu": "^2.1.16",

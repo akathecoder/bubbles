@@ -26,9 +26,12 @@ importers:
       '@dynamic-labs/sui':
         specifier: ^4.32.1
         version: 4.32.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.37.8(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))
+      '@dynamic-labs/types':
+        specifier: ^4.33.0
+        version: 4.33.0
       '@dynamic-labs/wagmi-connector':
         specifier: ^4.32.1
-        version: 4.32.1(81e3bfe349c02b61813fbc0e0e557333)
+        version: 4.32.1(4290f8dc46da6d3807520a9b2b5147e2)
       '@radix-ui/react-avatar':
         specifier: ^1.1.10
         version: 1.1.10(@types/react-dom@19.1.9(@types/react@19.1.13))(@types/react@19.1.13)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -200,6 +203,9 @@ packages:
   '@dynamic-labs/assert-package-version@4.32.1':
     resolution: {integrity: sha512-pkTT/gyB35CJLIk9Ma4IE5Qpcg3iTdK798OhIi1fxwL7b9KRLFHDJdDbdSPQGZy6usexlWI5deg4jNHA8IUROw==}
 
+  '@dynamic-labs/assert-package-version@4.33.0':
+    resolution: {integrity: sha512-/170c28AAW5/66bkUpF2npvLFC7UQRX094uPclHZYcZy3qUkV4KFzlseGdW4MiiZWPP0iCxkPHojPm0Q068C5A==}
+
   '@dynamic-labs/bitcoin@4.32.1':
     resolution: {integrity: sha512-MttguVMAm0VIOwC0EQp/A07QeBU/9ANYWmjfsv5Yddq/he7j+UxDtqRh8AdRfFamZ7EKYjgfCEznq74/HdqQ/Q==}
 
@@ -232,6 +238,9 @@ packages:
 
   '@dynamic-labs/logger@4.32.1':
     resolution: {integrity: sha512-6A1xrzQiE5yMOt/3HAzLlzNhMKBfpDEgy/gqfxWOKe+ZfqOwMboC+R6QNd0SWo75agUBfipRCiflPioH4ELVcA==}
+
+  '@dynamic-labs/logger@4.33.0':
+    resolution: {integrity: sha512-0jXY1YaRTHfQAumNyQgpEdOuHoSEzrlxz1K9zzT9f0xqop/dkgDWFyFBuxyj/wAcjKAnjlNA9irxhfx8L7ZGkw==}
 
   '@dynamic-labs/message-transport@4.32.1':
     resolution: {integrity: sha512-fCRXLn0Ib21c9OI83sq1cYRIukJErvSY3L+R55gvXrFXEYqPhww8Z8M7nCRR1U2pQRZcbfYRv4ocsK0zyxFjqA==}
@@ -271,6 +280,9 @@ packages:
 
   '@dynamic-labs/types@4.32.1':
     resolution: {integrity: sha512-QuCKEQcdvQ79f3RjR51/uzDW1lOHs/DIM8/Dabp4xZsyIcxhORW2rOqSJBlZZbUNJrCblTVLotsatQ2Pllsy6A==}
+
+  '@dynamic-labs/types@4.33.0':
+    resolution: {integrity: sha512-Y+SNYVHy1dp9WU2Y29BIy2T3Gw5cgecdYtZmVSgC8P6WkLWZ8RTrqqJ4xoFWe+R9YiWUtccWqZ3fNCfaR8ZKHQ==}
 
   '@dynamic-labs/utils@4.32.1':
     resolution: {integrity: sha512-a5nElTc5JVimX2IA8JFMNh7i1r5LWqQU5seP+ocp0hTQzvSnfj16LDAmByUY5N+iNI8hfXV0WyXrF71uPM/JaA==}
@@ -5001,6 +5013,10 @@ snapshots:
     dependencies:
       '@dynamic-labs/logger': 4.32.1
 
+  '@dynamic-labs/assert-package-version@4.33.0':
+    dependencies:
+      '@dynamic-labs/logger': 4.33.0
+
   '@dynamic-labs/bitcoin@4.32.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.2)':
     dependencies:
       '@btckit/types': 0.0.19
@@ -5176,6 +5192,10 @@ snapshots:
     dependencies:
       eventemitter3: 5.0.1
 
+  '@dynamic-labs/logger@4.33.0':
+    dependencies:
+      eventemitter3: 5.0.1
+
   '@dynamic-labs/message-transport@4.32.1':
     dependencies:
       '@dynamic-labs/assert-package-version': 4.32.1
@@ -5345,6 +5365,11 @@ snapshots:
       '@dynamic-labs/assert-package-version': 4.32.1
       '@dynamic-labs/sdk-api-core': 0.0.762
 
+  '@dynamic-labs/types@4.33.0':
+    dependencies:
+      '@dynamic-labs/assert-package-version': 4.33.0
+      '@dynamic-labs/sdk-api-core': 0.0.762
+
   '@dynamic-labs/utils@4.32.1':
     dependencies:
       '@dynamic-labs/assert-package-version': 4.32.1
@@ -5457,14 +5482,14 @@ snapshots:
       - utf-8-validate
       - viem
 
-  '@dynamic-labs/wagmi-connector@4.32.1(81e3bfe349c02b61813fbc0e0e557333)':
+  '@dynamic-labs/wagmi-connector@4.32.1(4290f8dc46da6d3807520a9b2b5147e2)':
     dependencies:
-      '@dynamic-labs/assert-package-version': 4.32.1
+      '@dynamic-labs/assert-package-version': 4.33.0
       '@dynamic-labs/ethereum-core': 4.32.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(viem@2.37.8(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))
-      '@dynamic-labs/logger': 4.32.1
+      '@dynamic-labs/logger': 4.33.0
       '@dynamic-labs/rpc-providers': 4.32.1
       '@dynamic-labs/sdk-react-core': 4.32.1(@types/react@19.1.13)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@dynamic-labs/types': 4.32.1
+      '@dynamic-labs/types': 4.33.0
       '@dynamic-labs/wallet-connector-core': 4.32.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@wagmi/core': 2.21.2(@tanstack/query-core@5.90.2)(@types/react@19.1.13)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.37.8(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))
       eventemitter3: 5.0.1

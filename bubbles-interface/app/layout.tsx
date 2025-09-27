@@ -49,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <QueryClientProvider client={queryClient}>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <body className={`${borel.style} ${geistSans.variable} ${geistMono.variable} antialiased`}>
           <DynamicContextProvider
             settings={{
               environmentId: "c5735bc8-84cc-4a26-a7d4-0cd948285a0e",
