@@ -4,7 +4,6 @@ import {
   encodePacked,
   hexToBytes,
   keccak256,
-  pad,
   parseAbiParameters,
   serializeSignature,
   type Hex,
@@ -69,7 +68,7 @@ export async function getEnsAddressUsingLookup(
 
     const result = encodeAbiParameters(
       parseAbiParameters("bytes, uint64, bytes"),
-      [pad(addr, { size: 32 }), expires, sig]
+      [addr, expires, sig]
     );
 
     return result;
