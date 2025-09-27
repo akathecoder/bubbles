@@ -1,5 +1,6 @@
 "use client";
 
+import * as halo from "@/lib/halo";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,45 +8,64 @@ import { TextAnimate } from "@/components/ui/text-animate";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { useRouter } from "next/navigation";
 import { Zap, ArrowRight, CheckCircle, Wifi, Smartphone } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function NFCPage() {
   const router = useRouter();
   const [isScanning, setIsScanning] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [step, setStep] = useState(1); // 1: tutorial, 2: scanning, 3: connected
+  const {
+    data: nfcData,
+    isPending,
+    error: nfcError,
+    mutate,
+  } = useMutation({
+    mutationKey: ["tap nfc"],
+    mutationFn: async () => {
+      const nfcAddress = await halo.getKey();
+      if (!nfcAddress) {
+        throw new Error("Could not scan the NFC");
+      }
 
-  const handleStartScanning = () => {
-    setStep(2);
-    setIsScanning(true);
+      toast.info(nfcAddress);
 
-    // Simulate NFC connection process
-    setTimeout(() => {
-      setIsScanning(false);
-      setIsConnected(true);
-      setStep(3);
-    }, 3000);
-  };
+      // const res = await fetch("/api/deployer", {
+      //   body: JSON.stringify({
+      //     chain: "4801",
+      //     owner: ownerAddr,
+      //     signers: [nfcAddress],
+      //   }),
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // });
 
-  const handleSkip = () => {
-    router.push('/');
-  };
+      // const data = await res.json();
 
-  const handleDone = () => {
-    router.push('/');
-  };
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+      // return data.account;
+      return nfcAddress;
+    },
+  });
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden">
       {/* Enhanced Floating Bubbles Background */}
       <FloatingBubbles />
 
       {/* Mobile-First Container */}
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="relative z-10 flex min-h-screen flex-col">
         {/* Header */}
-        <div className="pt-8 pb-4 px-6">
+        <div className="px-6 pt-8 pb-4">
           <div className="flex items-center justify-between">
-            <div className="text-3xl animate-gentle-bounce">🫧</div>
-            <Button variant="ghost" onClick={handleSkip} className="text-sm">
+            <div className="animate-gentle-bounce text-3xl">🫧</div>
+            <Button
+              variant="ghost"
+              // onClick={handleSkip}
+              className="text-sm"
+            >
               Skip for now
             </Button>
           </div>
@@ -53,10 +73,10 @@ export default function NFCPage() {
 
         {/* Content Area */}
         <div className="flex-1 px-6 pb-6">
-          {step === 1 && (
-            <div className="h-full flex flex-col justify-between min-h-[80vh]">
+          {!nfcData && (
+            <div className="flex h-full min-h-[80vh] flex-col justify-between">
               {/* Tutorial Content */}
-              <div className="flex-1 flex flex-col justify-center text-center space-y-8 pt-8">
+              <div className="flex flex-1 flex-col justify-center space-y-8 pt-8 text-center">
                 <div className="space-y-6">
                   <TextAnimate
                     animation="scaleUp"
@@ -69,7 +89,7 @@ export default function NFCPage() {
                   <div className="space-y-4">
                     <TextAnimate
                       animation="blurInUp"
-                      className="text-2xl font-bold text-primary"
+                      className="text-primary text-2xl font-bold"
                       delay={0.3}
                     >
                       Connect your NFC wristband
@@ -78,65 +98,30 @@ export default function NFCPage() {
                     <TextAnimate
                       animation="slideUp"
                       delay={0.6}
-                      className="text-lg text-muted-foreground max-w-md mx-auto leading-relaxed"
+                      className="text-muted-foreground mx-auto max-w-md text-lg leading-relaxed"
                     >
                       Link your arx.org wristband to make instant connections IRL ✨
                     </TextAnimate>
                   </div>
                 </div>
-
-                {/* Instructions */}
-                <div className="space-y-4">
-                  <TextAnimate
-                    animation="fadeIn"
-                    className="text-sm font-medium text-primary"
-                    delay={0.9}
-                  >
-                    Here's what you'll need:
-                  </TextAnimate>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-start space-x-4 p-4 rounded-3xl glass-card">
-                      <div className="text-3xl">📱</div>
-                      <div className="text-left flex-1">
-                        <TextAnimate animation="slideLeft" delay={1.2} className="font-semibold text-primary text-base">
-                          NFC-enabled phone
-                        </TextAnimate>
-                        <TextAnimate animation="slideLeft" delay={1.3} className="text-sm text-muted-foreground">
-                          Make sure NFC is turned on
-                        </TextAnimate>
-                      </div>
-                      <Smartphone className="w-5 h-5 text-primary" />
-                    </div>
-
-                    <div className="flex items-center justify-start space-x-4 p-4 rounded-3xl glass-card">
-                      <div className="text-3xl">⌚</div>
-                      <div className="text-left flex-1">
-                        <TextAnimate animation="slideLeft" delay={1.4} className="font-semibold text-primary text-base">
-                          arx.org wristband
-                        </TextAnimate>
-                        <TextAnimate animation="slideLeft" delay={1.5} className="text-sm text-muted-foreground">
-                          Your smart wristband device
-                        </TextAnimate>
-                      </div>
-                      <Wifi className="w-5 h-5 text-primary" />
-                    </div>
-                  </div>
-                </div>
               </div>
 
               {/* Bottom Actions */}
-              <div className="pb-8 space-y-4">
-                <RainbowButton onClick={handleStartScanning} size="lg" className="w-full h-14 text-lg font-semibold rounded-2xl">
-                  <Zap className="w-5 h-5 mr-2" />
+              <div className="space-y-4 pb-8">
+                <RainbowButton
+                  onClick={() => mutate()}
+                  size="lg"
+                  className="h-14 w-full rounded-2xl text-lg font-semibold"
+                >
+                  <Zap className="mr-2 h-5 w-5" />
                   Start Connection
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </RainbowButton>
 
                 <TextAnimate
                   animation="fadeIn"
                   delay={1.8}
-                  className="text-xs text-muted-foreground text-center"
+                  className="text-muted-foreground text-center text-xs"
                 >
                   This is optional - you can always connect later in settings
                 </TextAnimate>
@@ -144,21 +129,21 @@ export default function NFCPage() {
             </div>
           )}
 
-          {step === 2 && (
-            <div className="h-full flex flex-col justify-center items-center space-y-8 min-h-[80vh]">
+          {isPending && (
+            <div className="flex h-full min-h-[80vh] flex-col items-center justify-center space-y-8">
               {/* Scanning Animation */}
               <div className="relative">
-                <div className="w-32 h-32 rounded-full border-4 border-primary/20 flex items-center justify-center">
-                  <div className="text-4xl animate-pulse">📱</div>
+                <div className="border-primary/20 flex h-32 w-32 items-center justify-center rounded-full border-4">
+                  <div className="animate-pulse text-4xl">📱</div>
                 </div>
-                <div className="absolute inset-0 rounded-full border-4 border-primary animate-ping opacity-20"></div>
-                <div className="absolute inset-2 rounded-full border-4 border-accent animate-ping opacity-30 animation-delay-200"></div>
+                <div className="border-primary absolute inset-0 animate-ping rounded-full border-4 opacity-20"></div>
+                <div className="border-accent animation-delay-200 absolute inset-2 animate-ping rounded-full border-4 opacity-30"></div>
               </div>
 
-              <div className="text-center space-y-4">
+              <div className="space-y-4 text-center">
                 <TextAnimate
                   animation="blurInUp"
-                  className="text-2xl font-bold text-primary"
+                  className="text-primary text-2xl font-bold"
                 >
                   Looking for your wristband...
                 </TextAnimate>
@@ -166,7 +151,7 @@ export default function NFCPage() {
                 <TextAnimate
                   animation="slideUp"
                   delay={0.3}
-                  className="text-base text-muted-foreground max-w-sm mx-auto"
+                  className="text-muted-foreground mx-auto max-w-sm text-base"
                 >
                   Hold your wristband close to the back of your phone
                 </TextAnimate>
@@ -174,17 +159,17 @@ export default function NFCPage() {
 
               {/* Progress indicator */}
               <div className="w-full max-w-xs">
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-primary to-accent rounded-full animate-pulse w-3/4"></div>
+                <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                  <div className="from-primary to-accent h-full w-3/4 animate-pulse rounded-full bg-gradient-to-r"></div>
                 </div>
               </div>
             </div>
           )}
 
-          {step === 3 && (
-            <div className="h-full flex flex-col justify-between min-h-[80vh]">
+          {!!nfcData && (
+            <div className="flex h-full min-h-[80vh] flex-col justify-between">
               {/* Success Content */}
-              <div className="flex-1 flex flex-col justify-center text-center space-y-8 pt-8">
+              <div className="flex flex-1 flex-col justify-center space-y-8 pt-8 text-center">
                 <div className="space-y-6">
                   <TextAnimate
                     animation="scaleUp"
@@ -197,16 +182,18 @@ export default function NFCPage() {
                   <div className="space-y-4">
                     <TextAnimate
                       animation="blurInUp"
-                      className="text-2xl font-bold text-primary"
+                      className="text-primary text-2xl font-bold"
                       delay={0.3}
                     >
                       Wristband connected!
                     </TextAnimate>
 
+                    {nfcData}
+
                     <TextAnimate
                       animation="slideUp"
                       delay={0.6}
-                      className="text-lg text-muted-foreground max-w-md mx-auto leading-relaxed"
+                      className="text-muted-foreground mx-auto max-w-md text-lg leading-relaxed"
                     >
                       You're all set to make instant connections by tapping wristbands 🎉
                     </TextAnimate>
@@ -214,9 +201,9 @@ export default function NFCPage() {
                 </div>
 
                 {/* Success Card */}
-                <Card className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/20 backdrop-blur-sm mx-4">
-                  <CardHeader className="text-center pb-3">
-                    <div className="text-3xl mb-2">🔗</div>
+                <Card className="from-primary/10 via-accent/10 to-primary/10 border-primary/20 mx-4 border bg-gradient-to-r backdrop-blur-sm">
+                  <CardHeader className="pb-3 text-center">
+                    <div className="mb-2 text-3xl">🔗</div>
                     <CardTitle className="text-lg">Ready to Connect</CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -228,17 +215,21 @@ export default function NFCPage() {
               </div>
 
               {/* Bottom Actions */}
-              <div className="pb-8 space-y-4">
-                <RainbowButton onClick={handleDone} size="lg" className="w-full h-14 text-lg font-semibold rounded-2xl">
-                  <CheckCircle className="w-5 h-5 mr-2" />
+              <div className="space-y-4 pb-8">
+                <RainbowButton
+                  // onClick={handleDone}
+                  size="lg"
+                  className="h-14 w-full rounded-2xl text-lg font-semibold"
+                >
+                  <CheckCircle className="mr-2 h-5 w-5" />
                   Start Using Bubbles
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </RainbowButton>
 
                 <TextAnimate
                   animation="fadeIn"
                   delay={1}
-                  className="text-xs text-muted-foreground text-center"
+                  className="text-muted-foreground text-center text-xs"
                 >
                   Your wristband is now linked to your profile 🎯
                 </TextAnimate>
@@ -260,16 +251,16 @@ function FloatingBubbles() {
     delay: Math.random() * 6,
     duration: Math.random() * 4 + 5,
     gradient: [
-      'bubble-gradient-pink',
-      'bubble-gradient-blue',
-      'bubble-gradient-purple',
-      'bubble-gradient-green',
-      'bubble-gradient-yellow'
+      "bubble-gradient-pink",
+      "bubble-gradient-blue",
+      "bubble-gradient-purple",
+      "bubble-gradient-green",
+      "bubble-gradient-yellow",
     ][Math.floor(Math.random() * 5)],
   }));
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {bubbles.map((bubble) => (
         <div
           key={bubble.id}
@@ -280,7 +271,7 @@ function FloatingBubbles() {
             left: `${bubble.left}%`,
             animationDelay: `${bubble.delay}s`,
             animationDuration: `${bubble.duration}s`,
-            bottom: '-60px',
+            bottom: "-60px",
           }}
         />
       ))}
