@@ -5,6 +5,8 @@ import {
   HashLock,
   PrivateKeyProviderConnector,
   NetworkEnum,
+  SupportedChains,
+  type SupportedChain,
 } from "@1inch/cross-chain-sdk";
 import dotenv from "dotenv";
 const process = dotenv.config().parsed;
@@ -17,41 +19,6 @@ import {
   Wallet,
   JsonRpcProvider,
 } from "ethers";
-
-// TODO write formal bug for this function being inaccessible
-function getRandomBytes32() {
-  // for some reason the cross-chain-sdk expects a leading 0x and can't handle a 32 byte long hex string
-  return "0x" + Buffer.from(randomBytes(32)).toString("hex");
-}
-
-const makerPrivateKey = process?.WALLET_KEY;
-const makerAddress = process?.WALLET_ADDRESS;
-const nodeUrl = process?.RPC_URL; // suggested for ethereum https://eth.llamarpc.com
-const devPortalApiKey = process?.DEV_PORTAL_KEY;
-
-// Validate environment variables
-if (!makerPrivateKey || !makerAddress || !nodeUrl || !devPortalApiKey) {
-  throw new Error(
-    "Missing required environment variables. Please check your .env file."
-  );
-}
-
-const web3Instance = new Web3(nodeUrl);
-const blockchainProvider = new PrivateKeyProviderConnector(
-  makerPrivateKey,
-  web3Instance as any
-);
-
-const sdk = new SDK({
-  url: "https://api.1inch.dev/fusion-plus",
-  authKey: devPortalApiKey,
-  blockchainProvider,
-});
-
-let srcChainId = NetworkEnum.ARBITRUM;
-let dstChainId = NetworkEnum.COINBASE;
-let srcTokenAddress = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
-let dstTokenAddress = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 const approveABI = [
   {
@@ -68,45 +35,72 @@ const approveABI = [
   },
 ];
 
-(async () => {
-  const invert = false;
+interface SwapArgs {
+  srcChainId: SupportedChain;
+  dstChainId: SupportedChain;
+  srcTokenAddress: string;
+  dstTokenAddress: string;
+  makerAddress: string;
+  makerPrivateKey: string;
+  destinationAddress: string;
+  amount: string; // in wei
+  enableEstimate: boolean;
+}
 
-  if (invert) {
-    const temp = srcChainId;
-    srcChainId = dstChainId;
-    dstChainId = temp;
+export class OneInch {
+  rpc: string;
+  sdk: SDK;
 
-    const tempAddress = srcTokenAddress;
-    srcTokenAddress = dstTokenAddress;
-    dstTokenAddress = tempAddress;
+  constructor(args: { rpc: string; apiKey?: string; privateKey: string }) {
+    this.rpc = args.rpc;
+    const web3Instance = new Web3(args.rpc);
+    const blockchainProvider = new PrivateKeyProviderConnector(
+      args.privateKey,
+      web3Instance as any
+    );
+    this.sdk = new SDK({
+      url: "https://api.1inch.dev/fusion-plus",
+      authKey: args.apiKey,
+      blockchainProvider,
+    });
   }
 
-  // Approve tokens for spending.
-  // If you need to approve the tokens before posting an order, this code can be uncommented for first run.
-  // const provider = new JsonRpcProvider(nodeUrl);
-  // const tkn = new Contract(srcTokenAddress, approveABI, new Wallet(makerPrivateKey, provider));
-  // await tkn.approve(
-  //     '0x111111125421ca6dc452d289314280a0f8842a65', // aggregation router v6
-  //     (2n**256n - 1n) // unlimited allowance
-  // );
+  static getRandomBytes32() {
+    // for some reason the cross-chain-sdk expects a leading 0x and can't handle a 32 byte long hex string
+    return "0x" + Buffer.from(randomBytes(32)).toString("hex");
+  }
 
-  const params = {
-    srcChainId,
-    dstChainId,
-    srcTokenAddress,
-    dstTokenAddress,
-    amount: "1000000000000000000", // Adjust this to the correct decimal precision of the source token
-    enableEstimate: true,
-    walletAddress: makerAddress,
-  };
+  async approve(token: string, makerPrivateKey: string) {
+    const provider = new JsonRpcProvider(this.rpc);
+    const tkn = new Contract(
+      token,
+      approveABI,
+      new Wallet(makerPrivateKey, provider)
+    );
+    await tkn.approve(
+      "0x111111125421ca6dc452d289314280a0f8842a65", // aggregation router v6
+      2n ** 256n - 1n // unlimited allowance
+    );
+  }
 
-  sdk
-    .getQuote(params)
-    .then((quote) => {
+  async swap(args: SwapArgs) {
+    const params = {
+      srcChainId: args.srcChainId,
+      dstChainId: args.dstChainId,
+      srcTokenAddress: args.srcTokenAddress,
+      dstTokenAddress: args.dstTokenAddress,
+      amount: args.amount,
+      enableEstimate: args.enableEstimate,
+      walletAddress: args.makerAddress,
+    };
+
+    try {
+      const quote = await this.sdk.getQuote(params);
+      console.log(`Received Fusion+ quote from 1inch API: ${quote.quoteId}`);
+
       const secretsCount = quote.getPreset().secretsCount;
-
       const secrets = Array.from({ length: secretsCount }).map(() =>
-        getRandomBytes32()
+        OneInch.getRandomBytes32()
       );
       const secretHashes = secrets.map((x) => HashLock.hashSecret(x));
 
@@ -119,92 +113,69 @@ const approveABI = [
                   ["uint64", "bytes32"],
                   [i, secretHash.toString()]
                 )
-              )
+              ) as any
             );
 
       console.log("Received Fusion+ quote from 1inch API");
 
-      sdk
-        .placeOrder(quote, {
-          walletAddress: makerAddress,
-          hashLock,
-          secretHashes,
-        })
-        .then((quoteResponse) => {
-          const orderHash = quoteResponse.orderHash;
+      const quoteResponse = await this.sdk.placeOrder(quote, {
+        walletAddress: args.makerAddress,
+        hashLock,
+        secretHashes,
+      });
+      const orderHash = quoteResponse.orderHash;
+      console.log(`Order successfully placed`, orderHash);
+      await this.submitSecrets(orderHash, secrets, secretHashes);
+    } catch (error) {
+      console.error("Error in main execution:", error);
+    }
+  }
 
-          console.log(`Order successfully placed`);
+  async getOrderStatus(orderHash: string) {
+    return this.sdk.getOrderStatus(orderHash);
+  }
 
-          const intervalId = setInterval(() => {
+  async submitSecret(orderHash: string, secret: string) {
+    return this.sdk.submitSecret(orderHash, secret);
+  }
+
+  async submitSecrets(
+    orderHash: string,
+    secrets: string[],
+    secretHashes: string[]
+  ) {
+    let flag = true;
+
+    while (flag) {
+      console.log(
+        `Polling for fills until order status is set to "executed"...`
+      );
+      try {
+        const order = await this.getOrderStatus(orderHash);
+        if (order.status === "executed") {
+          console.log(`Order is complete. Exiting.`);
+          flag = false;
+        }
+
+        const fillsObject = await this.sdk.getReadyToAcceptSecretFills(
+          orderHash
+        );
+        if (fillsObject.fills.length > 0) {
+          for (const fill of fillsObject.fills) {
+            await this.submitSecret(orderHash, secrets[fill.idx]);
             console.log(
-              `Polling for fills until order status is set to "executed"...`
+              `Fill order found! Secret submitted: ${JSON.stringify(
+                secretHashes[fill.idx],
+                null,
+                2
+              )}`
             );
-            sdk
-              .getOrderStatus(orderHash)
-              .then((order) => {
-                if (order.status === "executed") {
-                  console.log(`Order is complete. Exiting.`);
-                  clearInterval(intervalId);
-                }
-              })
-              .catch((error) =>
-                console.error(`Error: ${JSON.stringify(error, null, 2)}`)
-              );
-
-            sdk
-              .getReadyToAcceptSecretFills(orderHash)
-              .then((fillsObject) => {
-                if (fillsObject.fills.length > 0) {
-                  fillsObject.fills.forEach((fill) => {
-                    sdk
-                      .submitSecret(orderHash, secrets[fill.idx])
-                      .then(() => {
-                        console.log(
-                          `Fill order found! Secret submitted: ${JSON.stringify(
-                            secretHashes[fill.idx],
-                            null,
-                            2
-                          )}`
-                        );
-                      })
-                      .catch((error) => {
-                        console.error(
-                          `Error submitting secret: ${JSON.stringify(
-                            error,
-                            null,
-                            2
-                          )}`
-                        );
-                      });
-                  });
-                }
-              })
-              .catch((error) => {
-                if (error.response) {
-                  // The request was made and the server responded with a status code
-                  // that falls out of the range of 2xx
-                  console.error("Error getting ready to accept secret fills:", {
-                    status: error.response.status,
-                    statusText: error.response.statusText,
-                    data: error.response.data,
-                  });
-                } else if (error.request) {
-                  // The request was made but no response was received
-                  console.error("No response received:", error.request);
-                } else {
-                  // Something happened in setting up the request that triggered an Error
-                  console.error("Error", error.message);
-                }
-              });
-          }, 5000);
-        })
-        .catch((error) => {
-          console.dir(error, { depth: null });
-        });
-    })
-    .catch((error) => {
-      console.dir(error, { depth: null });
-    });
-})().catch((error) => {
-  console.error("Error in main execution:", error);
-});
+          }
+        }
+      } catch (error) {
+        console.error(`Error: ${JSON.stringify(error, null, 2)}`);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+  }
+}
