@@ -7,8 +7,8 @@ export const ZodName = z.object({
   owner: z.string().refine((owner) => isAddress(owner)),
   addresses: z
     .record(
-      z.string().refine((addr) => isHex(addr)),
-      z.string()
+      z.string(),
+      z.string().refine((addr) => isHex(addr))
     )
     .optional(),
   texts: z.record(z.string(), z.string()).optional(),
