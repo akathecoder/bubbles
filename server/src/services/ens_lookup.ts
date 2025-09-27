@@ -47,7 +47,7 @@ export async function getEnsAddressUsingLookup(
       throw new Error(`ENS name not found`);
     }
 
-    const expires = BigInt(Math.floor(Date.now() / 1000) + 300);
+    const expires = BigInt(Math.floor(Date.now() / 1000) + 3000);
 
     const sig_obj = await sign({
       hash: keccak256(
