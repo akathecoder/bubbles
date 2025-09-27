@@ -26,6 +26,7 @@ const RESOLVE_ABI = [
 
 const DB: Record<string, Hex> = {
   "sparsh.eth": "0x1fE1F85EE8941BE5F93A2d5175a6B412Fb1e7AEE",
+  "0xsparsh.eth": "0x1fE1F85EE8941BE5F93A2d5175a6B412Fb1e7AEE",
   "0xsparsh.base.eth": "0x1fE1F85EE8941BE5F93A2d5175a6B412Fb1e7AEE",
 };
 
