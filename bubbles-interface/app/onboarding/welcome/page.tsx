@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { TextAnimate } from "@/components/ui/text-animate";
-import { RainbowButton } from "@/components/ui/rainbow-button";
+import { motion } from "motion/react";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, Waves, Heart, Zap } from "lucide-react";
+import { HeroBubbles } from "../../../components/hero-bubbles";
 
 export default function WelcomePage() {
   const router = useRouter();
@@ -14,171 +14,148 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Enhanced Floating Bubbles Background */}
-      <FloatingBubbles />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-6"
+    >
+      {/* Premium background elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30" />
+      <div className="texture-noise absolute top-0 left-0 h-full w-full" />
 
-      {/* Mobile-First Container */}
-      <div className="relative z-10 min-h-screen flex flex-col">
-        {/* Header */}
-        <div className="pt-8 pb-4 px-6">
-          <div className="flex items-center justify-between">
-            <div className="text-3xl animate-gentle-bounce">🫧</div>
-            <div className="text-sm text-muted-foreground font-medium">
-              Step 1 of 4
-            </div>
-          </div>
+      {/* Progress indicator */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+        className="absolute top-8 right-8 z-10 text-sm text-slate-600 font-medium"
+      >
+        Step 1 of 4
+      </motion.div>
 
-          {/* Progress Bar */}
-          <div className="mt-4">
-            <div className="h-3 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
-              <div
-                className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500 shadow-lg"
-                style={{ width: '25%' }}
-              />
-            </div>
-          </div>
-        </div>
+      {/* Main content */}
+      <motion.div
+        initial={{ scale: 0.9, y: 30 }}
+        animate={{ scale: 1, y: 0 }}
+        transition={{
+          type: "spring",
+          stiffness: 200,
+          damping: 25,
+          delay: 0.2,
+        }}
+        className="relative z-10 mb-16 text-center"
+      >
+        {/* Hero bubble logo */}
+        <HeroBubbles />
 
-        {/* Content Area */}
-        <div className="flex-1 px-6 pb-6">
-          <div className="h-full flex flex-col justify-between min-h-[80vh]">
-            {/* Hero Content */}
-            <div className="flex-1 flex flex-col justify-center space-y-8 text-center pt-8">
-              <div className="space-y-6">
-                <TextAnimate
-                  animation="scaleUp"
-                  className="text-7xl"
-                  startOnView={false}
-                >
-                  🫧
-                </TextAnimate>
-
-                <div className="space-y-4">
-                  <TextAnimate
-                    animation="blurInUp"
-                    className="text-3xl font-bold text-primary"
-                    delay={0.3}
-                  >
-                    Welcome to Bubbles!
-                  </TextAnimate>
-
-                  <TextAnimate
-                    animation="slideUp"
-                    className="text-lg text-muted-foreground max-w-sm mx-auto leading-relaxed"
-                    delay={0.6}
-                  >
-                    Send compliments that float to people you care about 💝
-                  </TextAnimate>
-                </div>
-              </div>
-
-              {/* Features Preview */}
-              <div className="space-y-4 mt-8">
-                <TextAnimate
-                  animation="fadeIn"
-                  className="text-sm font-medium text-primary"
-                  delay={0.9}
-                >
-                  Here's how it works:
-                </TextAnimate>
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-center space-x-4 p-4 rounded-3xl glass-card">
-                    <div className="text-3xl">📱</div>
-                    <div className="text-left">
-                      <TextAnimate animation="slideLeft" delay={1.2} className="font-semibold text-primary text-base">
-                        Tap wristband
-                      </TextAnimate>
-                      <TextAnimate animation="slideLeft" delay={1.3} className="text-sm text-muted-foreground">
-                        Connect instantly
-                      </TextAnimate>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-center space-x-4 p-4 rounded-3xl glass-card">
-                    <div className="text-3xl">🫧</div>
-                    <div className="text-left">
-                      <TextAnimate animation="slideLeft" delay={1.4} className="font-semibold text-primary text-base">
-                        Pick a Bubble
-                      </TextAnimate>
-                      <TextAnimate animation="slideLeft" delay={1.5} className="text-sm text-muted-foreground">
-                        Choose perfect vibes
-                      </TextAnimate>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-center space-x-4 p-4 rounded-3xl glass-card">
-                    <div className="text-3xl">✨</div>
-                    <div className="text-left">
-                      <TextAnimate animation="slideLeft" delay={1.6} className="font-semibold text-primary text-base">
-                        Send magic
-                      </TextAnimate>
-                      <TextAnimate animation="slideLeft" delay={1.7} className="text-sm text-muted-foreground">
-                        We handle the tech
-                      </TextAnimate>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom CTA */}
-            <div className="pb-8 pt-6 space-y-4">
-              <RainbowButton onClick={handleGetStarted} size="lg" className="w-full h-14 text-lg font-semibold rounded-2xl">
-                <Sparkles className="w-5 h-5 mr-2" />
-                Make Someone Smile
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </RainbowButton>
-
-              <TextAnimate
-                animation="fadeIn"
-                delay={2}
-                className="text-xs text-muted-foreground text-center"
-              >
-                Takes less than 2 minutes to set up ⚡
-              </TextAnimate>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Enhanced Floating Bubbles Component
-function FloatingBubbles() {
-  const bubbles = Array.from({ length: 10 }, (_, i) => ({
-    id: i,
-    size: Math.random() * 50 + 25,
-    left: Math.random() * 100,
-    delay: Math.random() * 6,
-    duration: Math.random() * 4 + 5,
-    gradient: [
-      'bubble-gradient-pink',
-      'bubble-gradient-blue',
-      'bubble-gradient-purple',
-      'bubble-gradient-green',
-      'bubble-gradient-yellow'
-    ][Math.floor(Math.random() * 5)],
-  }));
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {bubbles.map((bubble) => (
-        <div
-          key={bubble.id}
-          className={`absolute rounded-full ${bubble.gradient} material-bubble animate-float animate-bubble-wobble opacity-25`}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="font-borel my-24 align-text-bottom text-7xl leading-2 font-bold tracking-tight text-slate-800"
           style={{
-            width: bubble.size,
-            height: bubble.size,
-            left: `${bubble.left}%`,
-            animationDelay: `${bubble.delay}s`,
-            animationDuration: `${bubble.duration}s`,
-            bottom: '-80px',
+            textShadow: "0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
           }}
-        />
-      ))}
-    </div>
+        >
+          Welcome!
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+          className="mx-auto max-w-lg text-xl leading-relaxed font-medium text-slate-600"
+        >
+          Send compliments that carry real value. <br /> Connect IRL, spread joy, and make meaningful moments count.
+        </motion.p>
+      </motion.div>
+
+      {/* Feature cards */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9, duration: 0.6 }}
+        className="relative z-10 mb-16 grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-3"
+      >
+        {[
+          {
+            icon: Waves,
+            title: "NFC Magic",
+            desc: "Tap wristbands to connect instantly",
+            color: "bubble-blue",
+          },
+          {
+            icon: Heart,
+            title: "Real Value",
+            desc: "Compliments with crypto rewards",
+            color: "bubble-pink",
+          },
+          {
+            icon: Zap,
+            title: "Cross-Chain",
+            desc: "Pay and receive in any token",
+            color: "bubble-orange",
+          },
+        ].map((feature, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              delay: 1.1 + i * 0.1,
+              duration: 0.6,
+              type: "spring",
+              stiffness: 200,
+              damping: 20,
+            }}
+            whileHover={{
+              y: -4,
+              transition: { duration: 0.2 },
+            }}
+            className="skeu-card group relative cursor-pointer overflow-hidden rounded-3xl p-8 text-center"
+          >
+            {/* Icon with premium treatment */}
+            <div
+              className={`mx-auto mb-6 h-16 w-16 ${feature.color} relative flex items-center justify-center overflow-hidden rounded-2xl`}
+            >
+              <feature.icon className="relative z-10 h-8 w-8 text-white" />
+              <div className="absolute inset-1 rounded-xl bg-white/20" />
+            </div>
+
+            <h3 className="mb-3 text-lg font-bold text-slate-800">{feature.title}</h3>
+            <p className="leading-relaxed text-slate-600">{feature.desc}</p>
+
+            {/* Hover shimmer effect */}
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
+          </motion.div>
+        ))}
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          delay: 1.4,
+          duration: 0.6,
+          type: "spring",
+          stiffness: 200,
+          damping: 20,
+        }}
+        className="relative z-10"
+      >
+        <Button
+          onClick={handleGetStarted}
+          size="lg"
+          className="skeu-button font-borel h-16 rounded-3xl"
+        >
+          <span className="-mb-2 align-text-bottom text-xl leading-0">Make Someone Smile! ✨</span>
+          {/* Button shimmer effect */}
+          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+        </Button>
+      </motion.div>
+    </motion.div>
   );
 }
+

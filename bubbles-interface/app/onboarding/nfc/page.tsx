@@ -1,34 +1,51 @@
 "use client";
-
-import * as halo from "@/lib/halo";
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TextAnimate } from "@/components/ui/text-animate";
 import { RainbowButton } from "@/components/ui/rainbow-button";
-import { useRouter } from "next/navigation";
-import { Zap, ArrowRight, CheckCircle, Wifi, Smartphone } from "lucide-react";
+import { TextAnimate } from "@/components/ui/text-animate";
+import { baseSepoliaPaymasterRpc } from "@/lib/utils";
+import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
 import { useMutation } from "@tanstack/react-query";
+import { createZeroDevPaymasterClient } from "@zerodev/sdk";
+import { ArrowRight, CheckCircle, Zap } from "lucide-react";
+import { useMemo } from "react";
 import { toast } from "sonner";
+import { http } from "viem";
+import { baseSepolia } from "viem/chains";
+import { usePublicClient } from "wagmi";
 
 export default function NFCPage() {
-  const router = useRouter();
-  const [isScanning, setIsScanning] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+  // const {
+  //   data: nfcPerms,
+  //   isLoading: isNfcPermsLoading,
+  //   error: nfcPermsError,
+  // } = useQuery({
+  //   queryKey: ["nfc perms"],
+  //   queryFn: async () => {
+  //     const ndef = new window.NDEFReader() as NDEFReader;
+  //     await ndef.scan({ signal: controller.signal });
+  //   },
+  // });
+
   const {
     data: nfcData,
     isPending,
     error: nfcError,
-    mutate,
+    mutateAsync: getNfcAddress,
   } = useMutation({
     mutationKey: ["tap nfc"],
     mutationFn: async () => {
-      const nfcAddress = await halo.getKey();
-      if (!nfcAddress) {
-        throw new Error("Could not scan the NFC");
-      }
+      const nfcAddress = (await execHaloCmdWeb({
+        name: "get_pkeys",
+      })) as Promise<{ etherAddresses: Record<string, `0x${string}`> }>;
 
-      toast.info(nfcAddress);
+      // const nfcAddress = await halo.getKey();
+      // if (!nfcAddress) {
+      //   throw new Error("Could not scan the NFC");
+      // }
+      // window.alert(JSON.stringify(nfcAddress, null, 4));
+
+      // toast.info(nfcAddress);
 
       // const res = await fetch("/api/deployer", {
       //   body: JSON.stringify({
@@ -46,14 +63,151 @@ export default function NFCPage() {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
       // return data.account;
-      return nfcAddress;
+      return (await nfcAddress).etherAddresses["1"];
+    },
+    onSuccess: (data) => {
+      toast.success("Wristband connected!");
+      return data;
+    },
+    onError: (error) => {
+      toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    },
+  });
+
+  const baseSepoliaPublicClient = usePublicClient({
+    chainId: baseSepolia.id,
+  });
+  const baseSepoliaPaymasterClient = useMemo(() => {
+    if (!baseSepoliaPublicClient) return null;
+    return createZeroDevPaymasterClient({
+      chain: baseSepolia,
+      transport: http(baseSepoliaPaymasterRpc),
+    });
+  }, [baseSepoliaPublicClient]);
+
+  const {
+    mutate: sign7702,
+    error: sign7702Error,
+    data: sign7702Data,
+    isPending: isSign7702Pending,
+  } = useMutation({
+    mutationFn: async () => {
+      if (!baseSepoliaPublicClient) throw new Error("No public client");
+      if (!baseSepoliaPaymasterClient) throw new Error("No paymaster client");
+      // const nfcData = await getNfcAddress();
+      // const authorisationData = await prepareAuthorization(baseSepoliaPublicClient, {
+      //   account: nfcData as `0x${string}`,
+      //   address: kernelAddresses.accountImplementationAddress,
+      // });
+
+      // const authRequest = {
+      //   chainId: baseSepolia.id,
+      //   address: kernelAddresses.accountImplementationAddress,
+      //   nonce: 0,
+      // };
+      // const hash = hashAuthorization(authRequest);
+      // const signature = (await execHaloCmdWeb({
+      //   name: "sign",
+      //   keyNo: 1,
+      //   digest: hash.slice(2),
+      // })) as CommandResponse;
+      // console.log("auth", { signature });
+
+      // const authorisationZerodevData: SignedAuthorization = {
+      //   ...authRequest,
+      //   r: `0x${signature.signature.raw.r}`,
+      //   s: `0x${signature.signature.raw.s}`,
+      //   v: BigInt(signature.signature.raw.v),
+      // };
+
+      // const verified = await verifyAuthorization({
+      //   authorization: authorisationZerodevData,
+      //   address: signature.etherAddress,
+      // });
+
+      // console.log("AUTH VERIFIED", verified);
+
+      // const _sessionPrivateKey = generatePrivateKey();
+      // const sessionAccount = privateKeyToAccount(_sessionPrivateKey as `0x${string}`);
+      // const sessionKeySigner = await toECDSASigner({
+      //   signer: sessionAccount,
+      // });
+      // const permissionPlugin = await toPermissionValidator(baseSepoliaPublicClient, {
+      //   entryPoint: entryPoint,
+      //   kernelVersion: kernelVersion,
+      //   signer: sessionKeySigner,
+      //   policies: [toSudoPolicy({})],
+      // });
+      // console.log("PERMISSION PLUGIN CREATED", permissionPlugin);
+      // const validatorNonce = await getKernelV3Nonce(baseSepoliaPublicClient, signature.etherAddress);
+      // const typedData = await getPluginsEnableTypedData({
+      //   accountAddress,
+      //   chainId,
+      //   kernelVersion: version,
+      //   action,
+      //   hook,
+      //   validator: regular,
+      //   validatorNonce,
+      // });
+      // const sessionkernelAccount = await createKernelAccount(baseSepoliaPublicClient, {
+      //   // eip7702Account: nfcData,
+      //   address: signature.etherAddress as `0x${string}`,
+      //   entryPoint: entryPoint,
+      //   kernelVersion: kernelVersion,
+      //   eip7702Auth: authorisationZerodevData,
+      //   plugins: {
+      //     regular: permissionPlugin,
+      //   },
+      // });
+
+      // console.log("KERNEL ACCOUNT CREATED", sessionkernelAccount);
+
+      // const kernelAccountClient = createKernelAccountClient({
+      //   account: sessionkernelAccount,
+      //   chain: baseSepolia,
+      //   bundlerTransport: http(baseSepoliaBundlerRpc),
+      //   paymaster: baseSepoliaPaymasterClient,
+      //   client: baseSepoliaPublicClient,
+      // });
+
+      // console.log("kernelAccountClient created", kernelAccountClient);
+
+      // const tx = await kernelAccountClient.sendTransaction({
+      //   calls: [
+      //     {
+      //       to: zeroAddress,
+      //       value: BigInt(0),
+      //     },
+      //   ],
+      // });
+
+      // window.alert(`7702 tx hash: ${tx}`);
+
+      // const sessionKeyKernelAccount = await createKernelAccount(publicClient, {
+      //   entryPoint,
+      //   eip7702Account: signer,
+      //   plugins: {
+      //     regular: permissionPlugin,
+      //   },
+      //   kernelVersion: kernelVersion,
+      //   address: masterKernelAccountClient.account.address,
+      // });
+      // return signature;
+    },
+    onError: (error) => {
+      toast.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+      console.error(error);
+    },
+    onSuccess: (data) => {
+      toast.success("7702 Signed!");
+      return data;
     },
   });
 
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Enhanced Floating Bubbles Background */}
-      <FloatingBubbles />
+      {/* <FloatingBubbles /> */}
 
       {/* Mobile-First Container */}
       <div className="relative z-10 flex min-h-screen flex-col">
@@ -73,7 +227,21 @@ export default function NFCPage() {
 
         {/* Content Area */}
         <div className="flex-1 px-6 pb-6">
-          {!nfcData && (
+          <span>
+            hello
+            {/* <br />
+            nfc perms -{nfcPerms ? "yes" : "no"} - {isNfcPermsLoading ? "loading" : "loaded"}
+            <br />
+            {nfcPermsError?.name} - {nfcPermsError?.message} */}
+            <br />
+            {nfcError?.message}
+            <br />
+            {JSON.stringify(nfcData, null, 4)}
+            <br />
+            {isPending ? "pending" : "not pending"}
+          </span>
+
+          {!nfcData && !isPending && (
             <div className="flex h-full min-h-[80vh] flex-col justify-between">
               {/* Tutorial Content */}
               <div className="flex flex-1 flex-col justify-center space-y-8 pt-8 text-center">
@@ -109,7 +277,7 @@ export default function NFCPage() {
               {/* Bottom Actions */}
               <div className="space-y-4 pb-8">
                 <RainbowButton
-                  onClick={() => mutate()}
+                  onClick={() => getNfcAddress()}
                   size="lg"
                   className="h-14 w-full rounded-2xl text-lg font-semibold"
                 >
@@ -238,6 +406,19 @@ export default function NFCPage() {
           )}
         </div>
       </div>
+
+      <span>sign7702 error: {sign7702Error?.message}</span>
+      <span>sign7702 Data: {JSON.stringify(sign7702Data)}</span>
+
+      <RainbowButton
+        onClick={() => sign7702()}
+        size="lg"
+        className="h-14 w-full rounded-2xl text-lg font-semibold"
+      >
+        <Zap className="mr-2 h-5 w-5" />
+        Sign 7702
+        <ArrowRight className="ml-2 h-5 w-5" />
+      </RainbowButton>
     </div>
   );
 }
