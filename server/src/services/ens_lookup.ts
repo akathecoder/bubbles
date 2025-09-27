@@ -3,12 +3,17 @@ import {
   encodeAbiParameters,
   encodePacked,
   hexToBytes,
+  HttpRequestError,
   keccak256,
   parseAbiParameters,
   serializeSignature,
   type Hex,
 } from "viem";
 import { sign } from "viem/accounts";
+import {
+  decodeEnsOffchainRequest,
+  encodeEnsOffchainResponse,
+} from "../utils/ccip.js";
 import { bytesToPacket } from "../utils/ens.js";
 
 const RESOLVE_ABI = [
@@ -75,5 +80,39 @@ export async function getEnsAddressUsingLookup(
   } catch (error) {
     console.error(error);
     throw new Error(`invalid data`);
+  }
+}
+
+export async function getEnsAddressUsingCCIPLookup(
+  sender: Hex,
+  data: Hex
+): Promise<string> {
+  try {
+    const { name, query } = decodeEnsOffchainRequest({
+      sender,
+      data,
+    });
+    // const result = await getRecord(name, query, env);
+    const result = DB[name];
+    if (!result) {
+      throw new Error("ENS name not found");
+    }
+
+    const encodedResponse = await encodeEnsOffchainResponse(
+      {
+        sender,
+        data,
+      },
+      result,
+      process.env.ENS_LOOKUP_PRIVATE_KEY as Hex
+    );
+
+    return encodedResponse;
+  } catch (error) {
+    console.error(error);
+
+    const isHttpRequestError = error instanceof HttpRequestError;
+    const errMessage = isHttpRequestError ? error.message : "Unable to resolve";
+    throw new Error(errMessage);
   }
 }
