@@ -18,27 +18,13 @@ ensRoutes.get("/lookup/:name/:data", (c) => {
 
     const addr = getEnsAddressUsingLookup(name, data);
 
-    return c.json({
-      type: "object",
-      properties: {
-        data: {
-          type: "string",
-          description: addr,
-        },
-      },
-    });
+    return c.json({ data: addr });
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "some error occurred";
     return c.json(
       {
-        type: "object",
-        properties: {
-          message: {
-            type: "string",
-            description: errorMessage,
-          },
-        },
+        message: errorMessage,
       },
       400
     );
