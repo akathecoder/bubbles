@@ -53,13 +53,7 @@ export async function getEnsAddressUsingLookup(
       hash: keccak256(
         encodePacked(
           ["bytes", "address", "uint64", "bytes32", "bytes32"],
-          [
-            "0x1900",
-            resolver,
-            expires,
-            keccak256(data),
-            encodePacked(["bytes32"], [addr]),
-          ]
+          ["0x1900", resolver, expires, keccak256(data), keccak256(addr as Hex)]
         )
       ),
       privateKey: process.env.ENS_LOOKUP_PRIVATE_KEY as Hex,
@@ -73,7 +67,7 @@ export async function getEnsAddressUsingLookup(
     });
 
     const result = encodeAbiParameters(
-      parseAbiParameters("bytes, uint64, bytes"),
+      parseAbiParameters("address, uint64, bytes"),
       [addr, expires, sig]
     );
 
