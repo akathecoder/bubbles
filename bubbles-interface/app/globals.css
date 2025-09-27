@@ -59,42 +59,107 @@
 
 :root {
   --radius: 1rem;
-  --background: oklch(0.99 0.005 270);
-  --foreground: oklch(0.15 0.03 270);
-  --card: oklch(0.995 0.003 270);
-  --card-foreground: oklch(0.15 0.03 270);
-  --popover: oklch(0.995 0.003 270);
-  --popover-foreground: oklch(0.15 0.03 270);
-  --primary: oklch(0.65 0.15 260);
-  --primary-foreground: oklch(0.99 0.005 270);
-  --secondary: oklch(0.93 0.05 210);
-  --secondary-foreground: oklch(0.25 0.04 260);
-  --muted: oklch(0.95 0.02 210);
-  --muted-foreground: oklch(0.5 0.03 260);
-  --accent: oklch(0.85 0.08 180);
-  --accent-foreground: oklch(0.2 0.04 260);
-  --destructive: oklch(0.6 0.2 25);
-  --border: oklch(0.9 0.03 210);
-  --input: oklch(0.92 0.02 210);
-  --ring: oklch(0.65 0.15 260);
-  --chart-1: oklch(0.7 0.15 320);
-  --chart-2: oklch(0.65 0.12 200);
-  --chart-3: oklch(0.6 0.18 280);
-  --chart-4: oklch(0.75 0.14 150);
-  --chart-5: oklch(0.68 0.16 60);
-  --sidebar: oklch(0.98 0.003 270);
-  --sidebar-foreground: oklch(0.2 0.03 270);
-  --sidebar-primary: oklch(0.65 0.15 260);
-  --sidebar-primary-foreground: oklch(0.99 0.005 270);
-  --sidebar-accent: oklch(0.93 0.05 210);
-  --sidebar-accent-foreground: oklch(0.25 0.04 260);
-  --sidebar-border: oklch(0.9 0.03 210);
-  --sidebar-ring: oklch(0.65 0.15 260);
-  --color-1: oklch(66.2% 0.225 25.9);
-  --color-2: oklch(60.4% 0.26 302);
-  --color-3: oklch(69.6% 0.165 251);
-  --color-4: oklch(80.2% 0.134 225);
-  --color-5: oklch(90.7% 0.231 133);
+  
+  /* Skeumorphic Background - Like paper/fabric texture */
+  --background: #f8f9fa;
+  --background-texture: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.05) 0%, transparent 50%),
+    linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  
+  /* Foreground Colors */
+  --foreground: #2c3e50;
+  
+  /* Card - Like polished glass/crystal */
+  --card-bg: #ffffff;
+  --card-shadow-outer: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --card-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --card-border: rgba(255, 255, 255, 0.8);
+  --card-highlight: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.1) 100%);
+  --card-foreground: #2c3e50;
+  
+  /* Primary - Bubble material with realistic lighting */
+  --primary: #8b5cf6;
+  --primary-light: #a78bfa;
+  --primary-dark: #7c3aed;
+  --primary-shadow: 0 8px 15px rgba(139, 92, 246, 0.3);
+  --primary-highlight: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%);
+  --primary-foreground: #ffffff;
+  
+  /* Secondary - Matte finish */
+  --secondary: #f1f5f9;
+  --secondary-pressed: #e2e8f0;
+  --secondary-foreground: #475569;
+  
+  /* Accent - Metallic finish */
+  --accent: #06b6d4;
+  --accent-metallic: linear-gradient(135deg, #67e8f9 0%, #06b6d4 50%, #0891b2 100%);
+  --accent-foreground: #ffffff;
+  
+  /* Material-specific shadows and highlights */
+  --bubble-shadow-pink: 0 8px 20px rgba(255, 154, 158, 0.4);
+  --bubble-shadow-blue: 0 8px 20px rgba(168, 237, 234, 0.4);
+  --bubble-shadow-purple: 0 8px 20px rgba(210, 153, 194, 0.4);
+  --bubble-shadow-green: 0 8px 20px rgba(137, 247, 254, 0.4);
+  --bubble-shadow-yellow: 0 8px 20px rgba(253, 187, 45, 0.4);
+  
+  /* Realistic bubble gradients with proper lighting */
+  --bubble-pink: 
+    radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(255, 154, 158, 0.3) 0%, transparent 50%),
+    linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fad0c4 100%);
+    
+  --bubble-blue: 
+    radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(168, 237, 234, 0.3) 0%, transparent 50%),
+    linear-gradient(135deg, #a8edea 0%, #fed6e3 50%, #d4fc79 100%);
+    
+  --bubble-purple: 
+    radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(210, 153, 194, 0.3) 0%, transparent 50%),
+    linear-gradient(135deg, #d299c2 0%, #fef9d7 50%, #ffecd2 100%);
+    
+  --bubble-green: 
+    radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(137, 247, 254, 0.3) 0%, transparent 50%),
+    linear-gradient(135deg, #89f7fe 0%, #66a6ff 50%, #a8edea 100%);
+    
+  --bubble-yellow: 
+    radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(253, 187, 45, 0.3) 0%, transparent 50%),
+    linear-gradient(135deg, #fdbb2d 0%, #22c1c3 50%, #fdbb2d 100%);
+  
+  /* Realistic material properties */
+  --glass-surface: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  
+  /* Physical button effects */
+  --button-raised: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  --button-pressed: 
+    inset 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    inset 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  
+  /* Texture overlays */
+  --fabric-texture: 
+    radial-gradient(circle at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.02) 40.5%, rgba(0, 0, 0, 0.02) 60%, transparent 60.5%);
+  --paper-texture: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.01) 2px,
+      rgba(0, 0, 0, 0.01) 4px
+    );
 }
 
 .dark {
@@ -141,6 +206,346 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    background: var(--background);
+    background-image: var(--background-texture);
+    @apply text-foreground;
+    min-height: 100vh;
   }
+}
+
+/* Bubble Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-50vh) rotate(180deg) scale(1.1);
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(360deg) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes bubble-pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.1); opacity: 0.9; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
+}
+
+@keyframes bubble-wobble {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg);
+    border-radius: 50%;
+  }
+  25% { 
+    transform: scale(1.02, 0.98) rotate(0.5deg);
+    border-radius: 45% 55% 50% 50%;
+  }
+  50% { 
+    transform: scale(0.98, 1.02) rotate(-0.5deg);
+    border-radius: 50% 50% 45% 55%;
+  }
+  75% { 
+    transform: scale(1.01, 0.99) rotate(0.3deg);
+    border-radius: 55% 45% 50% 50%;
+  }
+}
+
+@keyframes surface-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes material-press {
+  0% {
+    transform: scale(1) translateY(0);
+    box-shadow: var(--button-raised);
+  }
+  100% {
+    transform: scale(0.98) translateY(2px);
+    box-shadow: var(--button-pressed);
+  }
+}
+
+/* Skeumorphic Animation Classes */
+.animate-float {
+  animation: float linear infinite;
+}
+
+.animate-bubble-pop {
+  animation: bubble-pop 0.6s ease-out;
+}
+
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 2s linear infinite;
+}
+
+.animate-gentle-bounce {
+  animation: gentle-bounce 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-bubble-wobble {
+  animation: bubble-wobble 4s ease-in-out infinite;
+}
+
+.animate-surface-ripple {
+  animation: surface-ripple 0.6s ease-out;
+}
+
+.animate-material-press {
+  animation: material-press 0.15s ease-out forwards;
+}
+
+/* Skeumorphic Glass Effects */
+.glass-card {
+  background: var(--card-bg);
+  background-image: var(--card-highlight), var(--fabric-texture);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow-outer), var(--card-shadow-inner);
+}
+
+/* Skeumorphic Bubble Effects */
+.bubble-gradient-pink {
+  background: var(--bubble-pink);
+  box-shadow: var(--bubble-shadow-pink);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.bubble-gradient-blue {
+  background: var(--bubble-blue);
+  box-shadow: var(--bubble-shadow-blue);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.bubble-gradient-purple {
+  background: var(--bubble-purple);
+  box-shadow: var(--bubble-shadow-purple);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.bubble-gradient-green {
+  background: var(--bubble-green);
+  box-shadow: var(--bubble-shadow-green);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.bubble-gradient-yellow {
+  background: var(--bubble-yellow);
+  box-shadow: var(--bubble-shadow-yellow);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Iridescent Effects */
+.iridescent {
+  background: linear-gradient(45deg, 
+    hsl(240, 100%, 90%) 0%,
+    hsl(300, 100%, 90%) 25%,
+    hsl(180, 100%, 90%) 50%,
+    hsl(60, 100%, 90%) 75%,
+    hsl(240, 100%, 90%) 100%);
+  background-size: 400% 400%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Skeumorphic Shadows */
+.soft-shadow {
+  box-shadow: var(--card-shadow-outer);
+}
+
+.bubble-shadow {
+  box-shadow: var(--card-shadow-outer), var(--card-shadow-inner);
+}
+
+/* Skeumorphic Button States */
+.btn-raised {
+  box-shadow: var(--button-raised);
+  background-image: var(--glass-surface);
+}
+
+.btn-pressed {
+  box-shadow: var(--button-pressed);
+  transform: translateY(1px);
+}
+
+.btn-raised:active {
+  box-shadow: var(--button-pressed);
+  transform: translateY(1px);
+}
+
+/* Skeumorphic Touch Feedback */
+.touch-feedback {
+  transition: all 0.15s ease-out;
+  position: relative;
+}
+
+.touch-feedback:active {
+  transform: scale(0.98) translateY(1px);
+  box-shadow: var(--button-pressed);
+}
+
+.touch-feedback:hover {
+  transform: translateY(-1px);
+}
+
+/* Textured Background Layer */
+.textured-bg {
+  background-image: var(--background-texture), var(--paper-texture);
+}
+
+/* Material-specific utility classes */
+.material-glass {
+  background: var(--glass-surface);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.material-bubble {
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+.material-bubble::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 30%;
+  height: 30%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.material-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: 15%;
+  right: 15%;
+  width: 15%;
+  height: 15%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Enhanced Skeumorphic Interactions */
+.btn-skeumorphic {
+  background: var(--card-bg);
+  background-image: var(--card-highlight), var(--fabric-texture);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--button-raised);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-skeumorphic::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-skeumorphic:hover::before {
+  left: 100%;
+}
+
+.btn-skeumorphic:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 6px 12px -2px rgba(0, 0, 0, 0.15),
+    0 4px 8px -2px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.btn-skeumorphic:active {
+  transform: translateY(1px);
+  box-shadow: var(--button-pressed);
+}
+
+/* Ripple Effect for Touch Feedback */
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Tactile Card Effects */
+.card-skeumorphic {
+  background: var(--card-bg);
+  background-image: var(--card-highlight), var(--fabric-texture);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow-outer), var(--card-shadow-inner);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-skeumorphic:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    0 15px 25px -12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.card-skeumorphic:active {
+  transform: translateY(0);
+  box-shadow: var(--card-shadow-outer), var(--card-shadow-inner);
 }
