@@ -125,8 +125,9 @@ export function SendBubbleSheet({ open, onOpenChange, connectionAddress, onSendC
       // Call callback if provided
       onSendComplete?.(sendData);
     },
-    onError: () => {
+    onError: (error) => {
       setIsSending(false);
+      console.log(error);
       toast.error("Failed to send bubble. Please try again.");
     },
   });

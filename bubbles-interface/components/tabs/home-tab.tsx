@@ -115,6 +115,15 @@ export function HomeTab() {
             )}
           </div>
         </div>
+
+        <Button
+          onClick={() => {
+            navigator.clipboard.writeText(address || "");
+          }}
+          className="skeu-button group relative w-full rounded-2xl"
+        >
+          Copy Address
+        </Button>
       </motion.div>
 
       {/* Bubble History */}
