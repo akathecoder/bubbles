@@ -102,7 +102,6 @@ export function ConnectionItem({ connection, index }: { connection: MockConnecti
             user?.displayName || "Unknown"
           )}
         </div>
-        <div className="text-sm text-slate-600">{connection.lastSeen}</div>
       </div>
 
       <div className="text-right">
@@ -164,7 +163,6 @@ export function FullConnectionItem({
                   user?.displayName || "Unknown"
                 )}
               </div>
-              <div className="text-sm text-slate-600">Last seen {connection.lastSeen}</div>
             </div>
           </div>
         </div>

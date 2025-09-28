@@ -41,28 +41,24 @@ export const MOCK_CONNECTIONS = [
   {
     id: "1",
     address: DEMO_ADDRESSES.VITALIK,
-    lastSeen: "2 min ago",
     bubblesSent: 3,
     bubblesReceived: 5,
   },
   {
     id: "2",
     address: DEMO_ADDRESSES.ENS_FOUNDER,
-    lastSeen: "1 hour ago",
     bubblesSent: 8,
     bubblesReceived: 2,
   },
   {
     id: "3",
     address: DEMO_ADDRESSES.DEMO_USER_1,
-    lastSeen: "2 hours ago",
     bubblesSent: 1,
     bubblesReceived: 7,
   },
   {
     id: "4",
     address: DEMO_ADDRESSES.DEMO_USER_2,
-    lastSeen: "1 day ago",
     bubblesSent: 0,
     bubblesReceived: 3,
   },
@@ -82,7 +78,6 @@ export interface MockBubbleHistory {
 export interface MockConnection {
   id: string;
   address: `0x${string}`;
-  lastSeen: string;
   bubblesSent: number;
   bubblesReceived: number;
 }
@@ -94,7 +89,6 @@ export interface StoredConnection {
   ensName?: string;
   avatar?: string;
   addedAt: string; // ISO date string
-  lastSeen: string;
   bubblesSent: number;
   bubblesReceived: number;
 }

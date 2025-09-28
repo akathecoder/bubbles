@@ -1,18 +1,16 @@
 // use this when there is no `"type": "module"` in your package.json, i.e. you're using commonjs
 
-import { SDK, HashLock, PrivateKeyProviderConnector, NetworkEnum, Quote } from "@1inch/cross-chain-sdk";
+import { PrivateKeyProviderConnector, Quote, SDK } from "@1inch/cross-chain-sdk";
 
-import { Web3 } from "web3";
-import { Contract, Wallet, JsonRpcProvider } from "ethers";
-import { approveABI } from "@/lib/oneInch/constants";
+import { ERC20Abi } from "@/lib/oneInch/ERC20Abi";
 import { type SwapArgs } from "@/lib/oneInch/types";
 import { getSecretsAndHashLock } from "@/lib/oneInch/utils";
-import { ERC20Abi } from "@/lib/oneInch/ERC20Abi";
-import { ethers } from "ethers";
+import { Contract, ethers, JsonRpcProvider, Wallet } from "ethers";
+import { Web3 } from "web3";
 
-const ONEINCH_API_URL = "https://api.1inch.dev/fusion-plus";
-const ONEINCH_AGGREGATION_ROUTER_V6 = "0x111111125421ca6dc452d289314280a0f8842a65";
-const UINT256_MAX = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+export const ONEINCH_API_URL = "https://api.1inch.dev/fusion-plus";
+export const ONEINCH_AGGREGATION_ROUTER_V6 = "0x111111125421ca6dc452d289314280a0f8842a65";
+export const UINT256_MAX = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
 export class OneInch {
   rpc: string;

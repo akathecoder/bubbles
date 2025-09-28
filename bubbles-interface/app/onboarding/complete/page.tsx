@@ -18,9 +18,9 @@ interface HomeTutorialProps {
 }
 
 const mockConnections = [
-  { name: "Alex Chen", avatar: avatarOptions[0], lastSeen: "2 min ago", bubbles: 12 },
-  { name: "Sarah Kim", avatar: avatarOptions[1], lastSeen: "5 min ago", bubbles: 8 },
-  { name: "Mike Johnson", avatar: avatarOptions[2], lastSeen: "1 hour ago", bubbles: 15 },
+  { name: "Alex Chen", avatar: avatarOptions[0], bubbles: 12 },
+  { name: "Sarah Kim", avatar: avatarOptions[1], bubbles: 8 },
+  { name: "Mike Johnson", avatar: avatarOptions[2], bubbles: 15 },
 ];
 
 const tutorialSteps = [
@@ -364,7 +364,6 @@ export default function HomeTutorial() {
                     <span className="text-xl">{connection.avatar}</span>
                     <div className="flex-1">
                       <div className="font-bold text-slate-800">{connection.name}</div>
-                      <div className="text-sm text-slate-600">{connection.lastSeen}</div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-bold text-slate-800">{connection.bubbles} bubbles</div>

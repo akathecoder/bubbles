@@ -2,20 +2,23 @@
 
 import { Bubble } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { BUBBLE_TYPES, BubbleType } from "@/lib/bubbles";
+import { useEnsUser } from "@/lib/hooks/useEnsUser";
+import { useProfileData } from "@/lib/hooks/useProfileData";
+import useSessionKey from "@/lib/hooks/useSessionKey";
+import { ONEINCH_AGGREGATION_ROUTER_V6, sendPayment } from "@/lib/oneInch";
+import { ArbitrumRpc, baseBundlerRpc, basePaymasterRpc, entryPoint, kernelAddresses, kernelVersion } from "@/lib/utils";
+import { NetworkEnum } from "@1inch/cross-chain-sdk";
 import { useMutation } from "@tanstack/react-query";
+import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk";
 import { Gift } from "lucide-react";
 import { motion } from "motion/react";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { sendPayment } from "@/lib/oneInch";
-import { send } from "process";
-import { NetworkEnum, SupportedChain } from "@1inch/cross-chain-sdk";
-import { Net } from "web3";
-import useSessionKey from "@/lib/hooks/useSessionKey";
-import { useEnsUser } from "@/lib/hooks/useEnsUser";
-import { ArbitrumRpc } from "@/lib/utils";
+import { erc20Abi, maxUint256 } from "viem";
+import { base } from "viem/chains";
+import { http, usePublicClient } from "wagmi";
 
 interface SendBubbleSheetProps {
   open: boolean;
@@ -36,18 +39,47 @@ export function SendBubbleSheet({ open, onOpenChange, connectionAddress, onSendC
   const [showSuccess, setShowSuccess] = useState(false);
   const { walletClient, sessionKey } = useSessionKey();
 
+  const { profileData } = useProfileData();
+
+  const basePublicClient = usePublicClient({
+    chainId: base.id,
+  });
+  const basePaymasterClient = useMemo(() => {
+    if (!basePublicClient) return null;
+    return createZeroDevPaymasterClient({
+      chain: base,
+      transport: http(basePaymasterRpc),
+    });
+  }, [basePublicClient]);
+
   // Get ENS data for the connection
   const connectionUser = useEnsUser(connectionAddress ?? undefined);
 
   const { mutate: sendBubble } = useMutation({
     mutationFn: async () => {
-      // Simulate sending bubble process
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      return { success: true };
-    },
-    onSuccess: () => {
-      setIsSending(false);
-      setShowSuccess(true);
+      if (!walletClient || !basePublicClient || !basePaymasterClient)
+        throw new Error("Wallet not connected or client not available");
+
+      const sessionKeyKernelAccount = await createKernelAccount(basePublicClient, {
+        entryPoint: entryPoint,
+        kernelVersion: kernelVersion,
+        eip7702Account: walletClient,
+        eip7702Auth: await walletClient.signAuthorization({
+          address: kernelAddresses.accountImplementationAddress,
+          chainId: base.id,
+          nonce: 0,
+        }),
+      });
+
+      const sessionKeyKernelAccountClient = createKernelAccountClient({
+        account: sessionKeyKernelAccount,
+        chain: base,
+        bundlerTransport: http(baseBundlerRpc),
+        paymaster: basePaymasterClient,
+        client: basePublicClient,
+      });
+
+      toast.success("Setting up your account");
 
       const sendData = {
         connectionAddress: connectionAddress!,
@@ -57,17 +89,34 @@ export function SendBubbleSheet({ open, onOpenChange, connectionAddress, onSendC
       };
 
       const sendPaymentArgs = {
-        srcChainId: NetworkEnum.ARBITRUM,
-        dstChainId: NetworkEnum.COINBASE,
-        srcTokenAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-        dstTokenAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        srcChainId: profileData?.selectedPayment.chainId,
+        dstChainId: connectionUser.preferredPayment?.split(":")[1],
+        srcTokenAddress: profileData?.selectedPayment.token,
+        dstTokenAddress: connectionUser.preferredPayment!.split(":")[2],
         makerAddress: walletClient?.address,
         makerPrivateKey: sessionKey!,
         destinationAddress: connectionAddress,
         amount: totalValue.toString(),
         enableEstimate: true,
       };
+
+      await sessionKeyKernelAccountClient.sendTransaction({
+        calls: [
+          {
+            to: profileData!.selectedPayment.token! as `0x${string}`,
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [ONEINCH_AGGREGATION_ROUTER_V6, maxUint256],
+          },
+        ],
+      });
+
       sendPayment(ArbitrumRpc, sessionKey!, "nQDdo8Xoz0Dq3IoDp2tEMPW9h8ucwDHD", sendPaymentArgs as any);
+      return sendData;
+    },
+    onSuccess: (sendData) => {
+      setIsSending(false);
+      setShowSuccess(true);
 
       toast.success(
         `Sent ${bubbleAmount} ${selectedBubbleType.name} bubble${bubbleAmount > 1 ? "s" : ""} to ${connectionUser.displayName}!`,

@@ -80,7 +80,6 @@ export function NFCScanner({
           ensName: nameData.ensAddress || undefined,
           avatar: undefined, // Could be fetched from ENS avatar records
           addedAt: new Date().toISOString(),
-          lastSeen: "just now",
           bubblesSent: 0,
           bubblesReceived: 0,
         };
@@ -89,10 +88,8 @@ export function NFCScanner({
         setStoredConnections((prev) => [...prev, newConnection]);
         toast.success(`Added ${nameData.ensAddress || "new connection"} to your connections!`);
       } else {
-        // Update existing connection's lastSeen
-        setStoredConnections((prev) =>
-          prev.map((conn) => (conn.address === address ? { ...conn, lastSeen: "just now" } : conn)),
-        );
+        // Connection already exists, no need to update anything
+        toast.info(`${nameData.ensAddress || "Connection"} already exists in your connections!`);
       }
 
       onScanSuccess?.(scannedUser);
