@@ -1,9 +1,10 @@
 import { Hono } from "hono";
-import type { Hex } from "viem";
+import { isAddress, type Hex } from "viem";
 import {
   getEnsAddressUsingCCIPLookup,
   getName,
   getNames,
+  getNameByOwner,
   setName,
 } from "../services/ens_lookup.js";
 
@@ -49,5 +50,27 @@ ensRoutes.get("/names", async (c) => {
 });
 
 ensRoutes.post("/set", setName);
+
+ensRoutes.get("/reverse_lookup/:ownerAddress", async (c) => {
+  try {
+    const { ownerAddress } = c.req.param();
+
+    if (!isAddress(ownerAddress)) {
+      return c.json({ message: "Invalid owner address" }, 400);
+    }
+
+    const name = await getNameByOwner(ownerAddress);
+
+    if (!name) {
+      return c.json({ message: "ENS address not found" }, 404);
+    }
+
+    return c.json({ ensAddress: name.name });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unable to perform reverse lookup";
+    return c.json({ message }, 500);
+  }
+});
 
 export default ensRoutes;

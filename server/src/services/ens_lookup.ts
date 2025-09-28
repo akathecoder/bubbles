@@ -97,6 +97,24 @@ export async function getName(name: string) {
   return nameData;
 }
 
+export async function getNameByOwner(ownerAddress: string) {
+  const db = createKysely();
+  const normalizedOwner = ownerAddress.toLowerCase();
+  const record = await db
+    .selectFrom("names")
+    .selectAll()
+    .where((eb) =>
+      eb("owner", "=", ownerAddress).or("owner", "=", normalizedOwner)
+    )
+    .executeTakeFirst();
+
+  if (!record) {
+    return null;
+  }
+
+  return parseNameFromDb(record);
+}
+
 export async function getNames() {
   const db = createKysely();
   const names = await db.selectFrom("names").selectAll().execute();
