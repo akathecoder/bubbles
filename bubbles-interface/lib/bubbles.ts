@@ -1,39 +1,24 @@
 export interface BubbleType {
   name: string;
-  description: string;
   value: number; // Base value in USD
-  category?: string; // Optional category for grouping
-  rarity?: "common" | "uncommon" | "rare" | "epic"; // Optional rarity system
 }
 
 export const BUBBLE_TYPES: BubbleType[] = [
   {
     name: "Kind",
-    description: "For thoughtful gestures",
     value: 0.5, // 500 bubbles = $0.50
-    category: "emotion",
-    rarity: "common",
   },
   {
     name: "Inspiring",
-    description: "For motivational moments",
     value: 1.0, // 1000 bubbles = $1.00
-    category: "motivation",
-    rarity: "uncommon",
   },
   {
     name: "Insightful",
-    description: "For brilliant ideas",
     value: 1.5, // 1500 bubbles = $1.50
-    category: "intellect",
-    rarity: "rare",
   },
   {
     name: "Cool",
-    description: "For awesome vibes",
     value: 0.8, // 800 bubbles = $0.80
-    category: "style",
-    rarity: "common",
   },
 ];
 
@@ -41,13 +26,6 @@ export function getBubbleTypeByName(name: string): BubbleType | undefined {
   return BUBBLE_TYPES.find((bubble) => bubble.name.toLowerCase() === name.toLowerCase());
 }
 
-export function getBubbleTypesByCategory(category: string): BubbleType[] {
-  return BUBBLE_TYPES.filter((bubble) => bubble.category === category);
-}
-
-export function getBubbleTypesByRarity(rarity: "common" | "uncommon" | "rare" | "epic"): BubbleType[] {
-  return BUBBLE_TYPES.filter((bubble) => bubble.rarity === rarity);
-}
 
 // Bubble conversion utilities (10 bubbles = 1 cent)
 export const BUBBLES_PER_CENT = 10;

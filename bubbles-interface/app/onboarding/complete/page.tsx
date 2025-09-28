@@ -11,44 +11,45 @@ import { useRouter } from "next/navigation";
 import { NFCAnimation } from "@/components/ui/nfc-animation";
 import { Bubble, BubbleListItem, FloatingBubble } from "@/components/ui/bubble";
 import { BUBBLE_TYPES } from "@/lib/bubbles";
+import { avatarOptions } from "../create-profile/page";
 
 interface HomeTutorialProps {
   userData: any;
 }
 
 const mockConnections = [
-  { name: "Alex Chen", avatar: "/cute-bubble-character-pink.jpg", lastSeen: "2 min ago", bubbles: 12 },
-  { name: "Sarah Kim", avatar: "/friendly-bubble-character-blue.jpg", lastSeen: "5 min ago", bubbles: 8 },
-  { name: "Mike Johnson", avatar: "/happy-bubble-character-green.jpg", lastSeen: "1 hour ago", bubbles: 15 },
+  { name: "Alex Chen", avatar: avatarOptions[0], lastSeen: "2 min ago", bubbles: 12 },
+  { name: "Sarah Kim", avatar: avatarOptions[1], lastSeen: "5 min ago", bubbles: 8 },
+  { name: "Mike Johnson", avatar: avatarOptions[2], lastSeen: "1 hour ago", bubbles: 15 },
+];
+
+const tutorialSteps = [
+  {
+    title: "Welcome to Bubbles!",
+    description: "Your home for meaningful connections and compliments",
+    component: "welcome",
+  },
+  {
+    title: "Tap to Connect",
+    description: "Scan someone's NFC wristband to add them to your circle",
+    component: "nfc-demo",
+  },
+  {
+    title: "Send Bubble Compliments",
+    description: "Choose from beautiful badges that carry real value",
+    component: "bubble-types",
+  },
+  {
+    title: "Your Circle",
+    description: "See recent connections and send them Bubbles anytime",
+    component: "connections",
+  },
 ];
 
 export default function HomeTutorial() {
   const router = useRouter();
   const [tutorialStep, setTutorialStep] = useState(0);
   const [showCompleteScreen, setShowCompleteScreen] = useState(false);
-
-  const tutorialSteps = [
-    {
-      title: "Welcome to Bubbles!",
-      description: "Your home for meaningful connections and compliments",
-      component: "welcome",
-    },
-    {
-      title: "Tap to Connect",
-      description: "Scan someone's NFC wristband to add them to your circle",
-      component: "nfc-demo",
-    },
-    {
-      title: "Send Bubble Compliments",
-      description: "Choose from beautiful badges that carry real value",
-      component: "bubble-types",
-    },
-    {
-      title: "Your Circle",
-      description: "See recent connections and send them Bubbles anytime",
-      component: "connections",
-    },
-  ];
 
   const nextStep = () => {
     if (tutorialStep < tutorialSteps.length - 1) {
@@ -356,10 +357,7 @@ export default function HomeTutorial() {
                     transition={{ delay: i * 0.1 }}
                     className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4"
                   >
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={connection.avatar || "/placeholder.svg"} />
-                      <AvatarFallback>{connection.name[0]}</AvatarFallback>
-                    </Avatar>
+                    <span className="text-xl">{connection.avatar}</span>
                     <div className="flex-1">
                       <div className="font-bold text-slate-800">{connection.name}</div>
                       <div className="text-sm text-slate-600">{connection.lastSeen}</div>

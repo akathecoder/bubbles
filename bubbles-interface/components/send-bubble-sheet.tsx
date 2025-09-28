@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "motion/react";
-import { Gift, Plus } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Bubble } from "@/components/ui/bubble";
-import { BUBBLE_TYPES } from "@/lib/bubbles";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { BUBBLE_TYPES, BubbleType } from "@/lib/bubbles";
+import { useMutation } from "@tanstack/react-query";
+import { Gift } from "lucide-react";
+import { motion } from "motion/react";
+import { memo, useState } from "react";
+import { toast } from "sonner";
 
 interface Connection {
   id: string;
@@ -26,19 +25,14 @@ interface SendBubbleSheetProps {
   connection: Connection | null;
   onSendComplete?: (data: {
     connection: Connection;
-    bubbleType: typeof BUBBLE_TYPES[0];
+    bubbleType: (typeof BUBBLE_TYPES)[0];
     amount: number;
     totalValue: number;
     note?: string;
   }) => void;
 }
 
-export function SendBubbleSheet({
-  open,
-  onOpenChange,
-  connection,
-  onSendComplete,
-}: SendBubbleSheetProps) {
+export function SendBubbleSheet({ open, onOpenChange, connection, onSendComplete }: SendBubbleSheetProps) {
   const [selectedBubbleType, setSelectedBubbleType] = useState(BUBBLE_TYPES[0]);
   const [bubbleAmount, setBubbleAmount] = useState(1);
   const [note, setNote] = useState("");
@@ -48,7 +42,7 @@ export function SendBubbleSheet({
   const { mutate: sendBubble } = useMutation({
     mutationFn: async () => {
       // Simulate sending bubble process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       return { success: true };
     },
     onSuccess: () => {
@@ -63,7 +57,9 @@ export function SendBubbleSheet({
         note: note || undefined,
       };
 
-      toast.success(`Sent ${bubbleAmount} ${selectedBubbleType.name} bubble${bubbleAmount > 1 ? 's' : ''} to ${connection?.name}!`);
+      toast.success(
+        `Sent ${bubbleAmount} ${selectedBubbleType.name} bubble${bubbleAmount > 1 ? "s" : ""} to ${connection?.name}!`,
+      );
 
       // Call callback if provided
       onSendComplete?.(sendData);
@@ -84,20 +80,20 @@ export function SendBubbleSheet({
   if (!connection) return null;
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="max-h-[90vh]">
-        <SheetHeader>
-          <SheetTitle>Send Bubble to {connection.name}</SheetTitle>
-          <SheetDescription>
-            Choose a compliment bubble to send
-          </SheetDescription>
-        </SheetHeader>
+    <Sheet
+      open={open}
+      onOpenChange={onOpenChange}
+    >
+      <SheetContent
+        side="bottom"
+        className="max-h-[90vh] min-h-[70vh]"
+      >
+        <SheetHeader>{!showSuccess && <SheetTitle>Send Bubbles to {connection.name}</SheetTitle>}</SheetHeader>
 
         {!showSuccess ? (
-          <div className="p-6 pt-2 space-y-6">
+          <div className="space-y-6 p-6 pt-2">
             {/* Bubble Type Selection */}
             <div>
-              <h3 className="text-lg font-bold text-slate-800 mb-4">Choose Bubble Type</h3>
               <div className="grid grid-cols-2 gap-3">
                 {BUBBLE_TYPES.map((bubbleType) => (
                   <motion.button
@@ -106,14 +102,18 @@ export function SendBubbleSheet({
                     animate={{ opacity: 1, scale: 1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedBubbleType(bubbleType)}
-                    className={`p-4 rounded-2xl border-2 transition-all duration-200 ${
+                    className={`rounded-2xl border-2 p-4 transition-all duration-200 ${
                       selectedBubbleType.name === bubbleType.name
                         ? "border-blue-500 bg-blue-50"
                         : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Bubble type={bubbleType} size="md" variant="default" />
+                      <Bubble
+                        type={bubbleType}
+                        size="md"
+                        variant="default"
+                      />
                       <div className="text-left">
                         <div className="font-bold text-slate-800">{bubbleType.name}</div>
                         <div className="text-sm text-slate-600">${bubbleType.value}</div>
@@ -126,7 +126,7 @@ export function SendBubbleSheet({
 
             {/* Amount Selection */}
             <div>
-              <h3 className="text-lg font-bold text-slate-800 mb-4">Amount</h3>
+              <h3 className="mb-4 text-lg font-bold text-slate-800">Amount</h3>
               <div className="flex items-center gap-4">
                 <Button
                   variant="outline"
@@ -139,7 +139,7 @@ export function SendBubbleSheet({
                 </Button>
                 <div className="flex-1 text-center">
                   <div className="text-2xl font-bold text-slate-800">{bubbleAmount}</div>
-                  <div className="text-sm text-slate-600">bubble{bubbleAmount > 1 ? 's' : ''}</div>
+                  <div className="text-sm text-slate-600">bubble{bubbleAmount > 1 ? "s" : ""}</div>
                 </div>
                 <Button
                   variant="outline"
@@ -153,36 +153,26 @@ export function SendBubbleSheet({
             </div>
 
             {/* Total Value */}
-            <div className="skeu-card rounded-2xl p-4 bg-slate-50">
-              <div className="flex justify-between items-center">
+            <div className="skeu-card rounded-2xl bg-slate-50 p-4">
+              <div className="flex items-center justify-between">
                 <span className="text-slate-600">Total Value:</span>
                 <span className="text-xl font-bold text-slate-800">${totalValue}</span>
               </div>
-            </div>
-
-            {/* Optional Note */}
-            <div>
-              <h3 className="text-lg font-bold text-slate-800 mb-3">Add a note (optional)</h3>
-              <input
-                type="text"
-                placeholder="e.g., Thanks for the help!"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                className="w-full h-12 px-4 rounded-xl border border-slate-200 text-base"
-              />
             </div>
 
             {/* Send Button */}
             <Button
               onClick={handleSend}
               disabled={isSending}
-              className="skeu-button w-full h-16 rounded-3xl relative group"
+              className="skeu-button group relative h-16 w-full rounded-3xl"
             >
               <Gift className="mr-2 h-5 w-5" />
               <span className="text-lg font-medium">
-                {isSending ? 'Sending...' : `Send ${bubbleAmount} ${selectedBubbleType.name} Bubble${bubbleAmount > 1 ? 's' : ''}`}
+                {isSending
+                  ? "Sending..."
+                  : `Send ${bubbleAmount} ${selectedBubbleType.name} Bubble${bubbleAmount > 1 ? "s" : ""}`}
               </span>
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full rounded-3xl" />
+              <div className="absolute inset-0 -translate-x-full rounded-3xl bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
             </Button>
           </div>
         ) : (
@@ -190,60 +180,21 @@ export function SendBubbleSheet({
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="p-6 pt-2 text-center space-y-6"
+            className="h-full space-y-6 p-6 pt-2 text-center"
           >
             {/* Floating Bubbles Animation */}
-            <div className="relative h-32 overflow-hidden">
-              {[...Array(15)].map((_, i) => {
-                const randomX = Math.random() * 80 + 10; // 10% to 90%
-                const randomDelay = Math.random() * 1.5; // 0 to 1.5s delay
-                const randomDuration = 1.5 + Math.random() * 1; // 1.5s to 2.5s duration
-                const randomScale = 0.8 + Math.random() * 0.4; // 0.8 to 1.2 scale
-
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{
-                      y: 150,
-                      opacity: 0,
-                      scale: 0,
-                      x: randomX + '%'
-                    }}
-                    animate={{
-                      y: -150,
-                      opacity: [0, 1, 1, 0],
-                      scale: [0, randomScale, randomScale, 0]
-                    }}
-                    transition={{
-                      duration: randomDuration,
-                      delay: randomDelay,
-                      ease: "easeOut",
-                      repeat: Infinity,
-                      repeatDelay: Math.random() * 2 + 1
-                    }}
-                    className="absolute"
-                    style={{
-                      left: `${randomX}%`,
-                    }}
-                  >
-                    <Bubble type={selectedBubbleType} size="sm" variant="default" />
-                  </motion.div>
-                );
-              })}
-            </div>
+            <FloatingBubbles selectedBubbleType={selectedBubbleType} />
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">Bubbles Sent! 🎉</h2>
-              <p className="text-slate-600 text-lg">
-                Sent {bubbleAmount} {selectedBubbleType.name} bubble{bubbleAmount > 1 ? 's' : ''} to {connection.name}
+              <h2 className="mb-2 text-2xl font-bold text-slate-800">Bubbles Sent! 🎉</h2>
+              <p className="text-lg text-slate-600">
+                Sent {bubbleAmount} {selectedBubbleType.name} bubble{bubbleAmount > 1 ? "s" : ""} to {connection.name}
               </p>
-              <p className="text-sm text-slate-500 mt-2">
-                They'll receive ${totalValue} in their preferred token
-              </p>
+              <p className="mt-2 text-sm text-slate-500">They'll receive ${totalValue} in their preferred token</p>
             </motion.div>
           </motion.div>
         )}
@@ -251,3 +202,50 @@ export function SendBubbleSheet({
     </Sheet>
   );
 }
+
+const FloatingBubbles = memo(({ selectedBubbleType }: { selectedBubbleType: BubbleType }) => {
+  return (
+    <div className="absolute inset-0 h-full w-full overflow-hidden">
+      {[...Array(15)].map((_, i) => {
+        const randomX = Math.random() * 80 + 10; // 10% to 90%
+        const randomDelay = Math.random() * 1.5; // 0 to 1.5s delay
+        const randomDuration = 1.5 + Math.random() * 1; // 1.5s to 2.5s duration
+        const randomScale = 0.8 + Math.random() * 0.4; // 0.8 to 1.2 scale
+
+        return (
+          <motion.div
+            key={i}
+            initial={{
+              y: 300,
+              opacity: 0,
+              scale: 0,
+              x: randomX + "%",
+            }}
+            animate={{
+              y: -150,
+              opacity: [0, 1, 1, 0],
+              scale: [0, randomScale, randomScale, 0],
+            }}
+            transition={{
+              duration: randomDuration,
+              delay: randomDelay,
+              ease: "easeOut",
+              repeat: Infinity,
+              repeatDelay: Math.random() * 2 + 1,
+            }}
+            className="absolute"
+            style={{
+              left: `${randomX}%`,
+            }}
+          >
+            <Bubble
+              type={selectedBubbleType}
+              size="sm"
+              variant="default"
+            />
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+});
