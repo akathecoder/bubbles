@@ -1,46 +1,30 @@
-import { useQuery } from "@tanstack/react-query";
-import { usePublicClient } from "wagmi";
-import { ENS_CONFIG } from "@/lib/ens-config";
+import { useQuery } from '@tanstack/react-query'
+import { usePublicClient } from 'wagmi'
 
-export interface UseEnsTextsProps {
-  name: string;
-  keys: string[];
-  enabled?: boolean;
-}
-
-export interface EnsTextRecord {
-  key: string;
-  value: string | null;
+export type UseEnsTextsProps = {
+  name: string
+  keys: string[]
+  enabled?: boolean
 }
 
 export function useEnsTexts({ name, keys, enabled = true }: UseEnsTextsProps) {
-  const publicClient = usePublicClient({ chainId: ENS_CONFIG.CHAIN_ID });
+  const wagmiClient = usePublicClient({ chainId: 1 })
 
   return useQuery({
-    queryKey: ["ens-texts", name, keys],
-    queryFn: async (): Promise<EnsTextRecord[]> => {
-      if (!publicClient) {
+    queryKey: ['ens-texts', name, keys],
+    queryFn: async () => {
+      if (!wagmiClient) {
         throw new Error("Public client not available");
       }
 
-      const promises = keys.map(
-        (key) =>
-          publicClient
-            .getEnsText({
-              name,
-              key,
-            })
-            .catch(() => null), // Return null if text record doesn't exist
-      );
+      const promises = keys.map((key) =>
+        wagmiClient.getEnsText({ name, key }).catch(() => null)
+      )
+      const results = await Promise.all(promises)
 
-      const results = await Promise.all(promises);
-
-      return keys.map((key, index) => ({
-        key,
-        value: results[index],
-      }));
+      return keys.map((key, index) => ({ key, value: results[index] }))
     },
-    enabled: enabled && !!name && !!publicClient,
+    enabled: enabled && !!name && !!wagmiClient,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: (failureCount, error) => {
       // Don't retry if it's just a missing record
@@ -49,7 +33,7 @@ export function useEnsTexts({ name, keys, enabled = true }: UseEnsTextsProps) {
       }
       return failureCount < 3;
     },
-  });
+  })
 }
 
 // Helper hook specifically for Bubbles profile data
@@ -61,18 +45,18 @@ export function useBubblesProfile(ensName: string) {
   } = useEnsTexts({
     name: ensName,
     keys: [
-      ENS_CONFIG.TEXT_KEYS.DESCRIPTION,
-      ENS_CONFIG.TEXT_KEYS.PREFERRED_PAYMENT,
-      ENS_CONFIG.TEXT_KEYS.BUBBLES_AVATAR,
+      'description',
+      'bubbles.preferred-payment',
+      'bubbles.avatar',
     ],
     enabled: !!ensName,
   });
 
   const profileData = textRecords
     ? {
-        description: textRecords.find((r) => r.key === ENS_CONFIG.TEXT_KEYS.DESCRIPTION)?.value || "",
-        preferredPayment: textRecords.find((r) => r.key === ENS_CONFIG.TEXT_KEYS.PREFERRED_PAYMENT)?.value || "",
-        avatar: textRecords.find((r) => r.key === ENS_CONFIG.TEXT_KEYS.BUBBLES_AVATAR)?.value || "",
+        description: textRecords.find((r) => r.key === 'description')?.value || "",
+        preferredPayment: textRecords.find((r) => r.key === 'bubbles.preferred-payment')?.value || "",
+        avatar: textRecords.find((r) => r.key === 'bubbles.avatar')?.value || "",
       }
     : null;
 
