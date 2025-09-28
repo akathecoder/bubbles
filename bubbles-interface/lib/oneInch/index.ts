@@ -10,13 +10,6 @@ import { getSecretsAndHashLock } from "@/lib/oneInch/utils";
 import { ERC20Abi } from "@/lib/oneInch/ERC20Abi";
 import { ethers } from "ethers";
 
-export function getSdk() {
-  return new SDK({
-    url: "https://api.1inch.dev/fusion-plus",
-    authKey: process.env.ONEINCH_API_KEY,
-  });
-}
-
 const ONEINCH_API_URL = "https://api.1inch.dev/fusion-plus";
 const ONEINCH_AGGREGATION_ROUTER_V6 = "0x111111125421ca6dc452d289314280a0f8842a65";
 const UINT256_MAX = "115792089237316195423570985008687907853269984665640564039457584007913129639935";

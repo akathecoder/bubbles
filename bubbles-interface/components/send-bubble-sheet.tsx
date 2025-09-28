@@ -9,7 +9,13 @@ import { Gift } from "lucide-react";
 import { motion } from "motion/react";
 import { memo, useState } from "react";
 import { toast } from "sonner";
+import { sendPayment } from "@/lib/oneInch";
+import { send } from "process";
+import { NetworkEnum, SupportedChain } from "@1inch/cross-chain-sdk";
+import { Net } from "web3";
+import useSessionKey from "@/lib/hooks/useSessionKey";
 import { useEnsUser } from "@/lib/hooks/useEnsUser";
+import { ArbitrumRpc } from "@/lib/utils";
 
 interface SendBubbleSheetProps {
   open: boolean;
@@ -28,6 +34,7 @@ export function SendBubbleSheet({ open, onOpenChange, connectionAddress, onSendC
   const [bubbleAmount, setBubbleAmount] = useState(1);
   const [isSending, setIsSending] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const { walletClient, sessionKey } = useSessionKey();
 
   // Get ENS data for the connection
   const connectionUser = useEnsUser(connectionAddress ?? undefined);
@@ -48,6 +55,19 @@ export function SendBubbleSheet({ open, onOpenChange, connectionAddress, onSendC
         amount: bubbleAmount,
         totalValue: bubbleAmount * selectedBubbleType.value,
       };
+
+      const sendPaymentArgs = {
+        srcChainId: NetworkEnum.ARBITRUM,
+        dstChainId: NetworkEnum.COINBASE,
+        srcTokenAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+        dstTokenAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        makerAddress: walletClient?.address,
+        makerPrivateKey: sessionKey!,
+        destinationAddress: connectionAddress,
+        amount: totalValue.toString(),
+        enableEstimate: true,
+      };
+      sendPayment(ArbitrumRpc, sessionKey!, "nQDdo8Xoz0Dq3IoDp2tEMPW9h8ucwDHD", sendPaymentArgs as any);
 
       toast.success(
         `Sent ${bubbleAmount} ${selectedBubbleType.name} bubble${bubbleAmount > 1 ? "s" : ""} to ${connectionUser.displayName}!`,
