@@ -22,7 +22,7 @@ export function ScanTab() {
 
   const handleSendComplete = (data: any) => {
     console.log("Bubble sent via scan:", data);
-    // You could add the user to connections here
+    // Connection is automatically saved by NFCScanner component
     toast.success(`Bubble sent successfully!`);
   };
 

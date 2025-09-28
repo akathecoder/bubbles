@@ -38,6 +38,28 @@ export async function getKeys() {
   return execHaloCmdWeb(command, options) as Promise<KeyInfo>;
 }
 
+// {"keyState":{"isPasswordProtected":false,"rawSignCommandNotUsed":false,"isImported":false,"isExported":false,"failedAuthCounter":0},"publicKey":"0452ca9b48403dc6f896b6015f138f7699e72cb2594545848ec6f72348ba66ab431dcc5402fe9c59fd344d5b5a9fdb07795c6b26591721a2566a3755c764b09237","attestSig":"02a13045022100c98b271dd6271ffc972ae51a1509e317c068c923e0d1a0ffb246656c98c5e5e9022035b75778751ff1250ff509372bf79d6dd2549cb00aa43155f4026b107b37240d"}
+export type KeyInfo2 = {
+  keyState: {
+    isPasswordProtected: boolean;
+    rawSignCommandNotUsed: boolean;
+    isImported: boolean;
+    isExported: boolean;
+    failedAuthCounter: number;
+  };
+  publicKey: string;
+  attestSig: string;
+};
+
+export async function getKeyInfo() {
+  const command = {
+    name: "get_key_info",
+    keyNo: 1,
+  };
+
+  return execHaloCmdWeb(command, options) as Promise<KeyInfo>;
+}
+
 export async function getKey() {
   const keys = await getKeys();
   return keys.etherAddresses["1"];

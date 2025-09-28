@@ -9,6 +9,8 @@ import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
 
 import { Button } from "@/components/ui/button";
 import { NFCAnimation } from "@/components/ui/nfc-animation";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { StoredConnection } from "@/lib/mock-data";
 
 interface ScannedUser {
   address: `0x${string}`;
@@ -39,6 +41,9 @@ export function NFCScanner({
   showAnimation = false,
   disabled = false,
 }: NFCScannerProps) {
+  // localStorage for storing connections
+  const [storedConnections, setStoredConnections] = useLocalStorage<StoredConnection[]>("bubbles-connections", []);
+
   const {
     data: nfcData,
     isPending: isScanning,
@@ -55,15 +60,40 @@ export function NFCScanner({
     onSuccess: async (address) => {
       toast.success("NFC scan successful!");
 
-      // Mock ENS lookup - in real app, you'd call ENS resolver
-      const mockEnsName = `user-${address.slice(-4)}.eth`;
-      const mockAvatar = ["👼", "👨‍💻", "👩‍⚖️", "🦹‍♀️", "🤖", "🧸"][Math.floor(Math.random() * 6)];
+      // Fetch ENS data for the scanned address
+      const res = await fetch(`https://bubbles-server.onrender.com/api/ens/reverse_lookup/${address}`);
+      const nameData = (await res.json()) as { ensAddress: string };
 
-      const scannedUser: ScannedUser = {
-        address,
-        ensName: mockEnsName,
-        avatar: mockAvatar,
+      const scannedUser = {
+        address: address,
+        ensName: nameData.ensAddress,
       };
+
+      // Check if connection already exists
+      const existingConnection = storedConnections.find((conn) => conn.address === address);
+
+      if (!existingConnection) {
+        // Create new connection and save to localStorage
+        const newConnection: StoredConnection = {
+          id: `stored-${Date.now()}`,
+          address: address,
+          ensName: nameData.ensAddress || undefined,
+          avatar: undefined, // Could be fetched from ENS avatar records
+          addedAt: new Date().toISOString(),
+          lastSeen: "just now",
+          bubblesSent: 0,
+          bubblesReceived: 0,
+        };
+
+        // Add to localStorage
+        setStoredConnections((prev) => [...prev, newConnection]);
+        toast.success(`Added ${nameData.ensAddress || "new connection"} to your connections!`);
+      } else {
+        // Update existing connection's lastSeen
+        setStoredConnections((prev) =>
+          prev.map((conn) => (conn.address === address ? { ...conn, lastSeen: "just now" } : conn)),
+        );
+      }
 
       onScanSuccess?.(scannedUser);
     },

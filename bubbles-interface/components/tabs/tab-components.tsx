@@ -7,10 +7,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Bubble } from "@/components/ui/bubble";
 import { useEnsUser } from "@/lib/hooks/useEnsUser";
-import { MockBubbleHistory, MockConnection } from "@/lib/mock-data";
+import { MockBubbleHistory, MockConnection, StoredConnection } from "@/lib/mock-data";
 
 // Component to handle individual bubble history items with ENS data
-export function BubbleHistoryItem({ bubble, userAddress, index }: {
+export function BubbleHistoryItem({
+  bubble,
+  userAddress,
+  index,
+}: {
   bubble: MockBubbleHistory;
   userAddress?: `0x${string}`;
   index: number;
@@ -67,10 +71,7 @@ export function BubbleHistoryItem({ bubble, userAddress, index }: {
 }
 
 // Component to handle individual connection items with ENS data
-export function ConnectionItem({ connection, index }: {
-  connection: MockConnection;
-  index: number;
-}) {
+export function ConnectionItem({ connection, index }: { connection: MockConnection; index: number }) {
   const user = useEnsUser(connection.address);
   const isLoading = user?.isLoading;
 
@@ -121,10 +122,14 @@ export function ConnectionItem({ connection, index }: {
 }
 
 // Component for full connection cards in the connections tab
-export function FullConnectionItem({ connection, index, onSend }: {
-  connection: MockConnection;
+export function FullConnectionItem({
+  connection,
+  index,
+  onSend,
+}: {
+  connection: StoredConnection;
   index: number;
-  onSend: (connection: MockConnection) => void;
+  onSend: (connection: StoredConnection) => void;
 }) {
   const user = useEnsUser(connection.address);
   const isLoading = user?.isLoading;
@@ -164,7 +169,7 @@ export function FullConnectionItem({ connection, index, onSend }: {
           </div>
         </div>
 
-        <div className="hidden gap-6 sm:flex sm:contents">
+        <div className="hidden gap-6 sm:flex">
           <div className="text-center">
             <div className="font-bold text-green-600">{connection.bubblesReceived}</div>
             <div className="text-xs text-green-600">received</div>

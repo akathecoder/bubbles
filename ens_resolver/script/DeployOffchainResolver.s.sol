@@ -5,6 +5,7 @@ import "forge-std/Script.sol";
 import "forge-std/console2.sol";
 
 import "../src/OffchainResolver.sol";
+import "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract DeployOffchainResolver is Script {
     uint256 internal deployerKey;
@@ -22,7 +23,15 @@ contract DeployOffchainResolver is Script {
 
         vm.startBroadcast(deployerKey);
         resolver = new OffchainResolver();
-        resolver.initialize(resolverURL, signerList);
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(resolver),
+            abi.encodeWithSelector(
+                OffchainResolver.initialize.selector,
+                resolverURL,
+                signerList
+            )
+        );
+        resolver = OffchainResolver(address(proxy));
         vm.stopBroadcast();
 
         console2.log("OffchainResolver deployed to", address(resolver));
