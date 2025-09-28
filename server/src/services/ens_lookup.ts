@@ -63,10 +63,11 @@ export async function getEnsAddressUsingCCIPLookup(
     });
     const result = await getRecord(name, query);
     if (!result) {
+      console.error("ENS name not found in DB", { name, query });
       throw new Error("ENS name not found");
     }
 
-    console.info({ name, query, result });
+    console.info("ENS Lookup Success", { name, query, result });
 
     const encodedResponse = await encodeEnsOffchainResponse(
       {
