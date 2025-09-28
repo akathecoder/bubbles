@@ -171,9 +171,7 @@ export default function NFCPage() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="mb-12"
             >
-              <div className="skeu-card mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-purple-100 text-6xl">
-                📱
-              </div>
+              <NFCAnimation />
             </motion.div>
 
             {/* Action */}

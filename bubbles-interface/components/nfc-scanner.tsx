@@ -87,9 +87,7 @@ export function NFCScanner({
   return (
     <div className="flex flex-col items-center gap-4">
       {/* Scanning Animation (optional) */}
-      {showAnimation && isScanning && (
-        <NFCAnimation size="md" />
-      )}
+      {showAnimation && isScanning && <NFCAnimation size="md" />}
 
       {/* Scan Button */}
       <Button
@@ -99,13 +97,13 @@ export function NFCScanner({
         className={`${buttonSizeClasses[buttonSize]} ${buttonClassName}`}
       >
         {buttonIcon}
-        <span className={buttonSize === "lg" ? "ml-2 -mb-2 align-text-bottom" : "ml-2"}>
-          {isScanning ? 'Scanning...' : buttonText}
+        <span className={buttonSize === "lg" ? "font-borel -mb-4 ml-2 align-text-bottom" : "ml-2"}>
+          {isScanning ? "Scanning..." : buttonText}
         </span>
 
         {/* Shimmer effect for skeu-button */}
         {buttonClassName.includes("skeu-button") && (
-          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full rounded-2xl" />
+          <div className="absolute inset-0 -translate-x-full rounded-2xl bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
         )}
       </Button>
 
@@ -114,7 +112,7 @@ export function NFCScanner({
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-sm text-slate-600 text-center"
+          className="text-center text-sm text-slate-600"
         >
           Hold your NFC device close to the back of your phone
         </motion.p>

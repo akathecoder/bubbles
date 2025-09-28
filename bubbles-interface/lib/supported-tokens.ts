@@ -5,7 +5,6 @@ export interface Token {
   decimals: number;
   address?: string;
   icon: string;
-  coingeckoId?: string;
 }
 
 export interface Chain {
@@ -14,44 +13,36 @@ export interface Chain {
   symbol: string;
   icon: string;
   chainId: number;
-  rpcUrls: string[];
-  blockExplorerUrls: string[];
   nativeCurrency: Token;
 }
 
 export const chains: Chain[] = [
   {
-    id: 'base',
-    name: 'Base',
-    symbol: 'ETH',
-    icon: '🔵',
+    id: "base",
+    name: "Base",
+    symbol: "ETH",
+    icon: "🔵",
     chainId: 8453,
-    rpcUrls: ['https://mainnet.base.org', 'https://base.llamarpc.com'],
-    blockExplorerUrls: ['https://basescan.org'],
     nativeCurrency: {
-      id: 'eth',
-      name: 'Ethereum',
-      symbol: 'ETH',
+      id: "eth",
+      name: "Ethereum",
+      symbol: "ETH",
       decimals: 18,
-      icon: 'Ξ',
-      coingeckoId: 'ethereum',
+      icon: "Ξ",
     },
   },
   {
-    id: 'arbitrum',
-    name: 'Arbitrum One',
-    symbol: 'ETH',
-    icon: '🔺',
+    id: "arbitrum",
+    name: "Arbitrum One",
+    symbol: "ETH",
+    icon: "🔺",
     chainId: 42161,
-    rpcUrls: ['https://arb1.arbitrum.io/rpc', 'https://arbitrum.llamarpc.com'],
-    blockExplorerUrls: ['https://arbiscan.io'],
     nativeCurrency: {
-      id: 'eth',
-      name: 'Ethereum',
-      symbol: 'ETH',
+      id: "eth",
+      name: "Ethereum",
+      symbol: "ETH",
       decimals: 18,
-      icon: 'Ξ',
-      coingeckoId: 'ethereum',
+      icon: "Ξ",
     },
   },
 ];
@@ -59,40 +50,37 @@ export const chains: Chain[] = [
 export const tokens: Record<string, Token[]> = {
   base: [
     {
-      id: 'usdc',
-      name: 'USD Coin',
-      symbol: 'USDC',
+      id: "usdc",
+      name: "USD Coin",
+      symbol: "USDC",
       decimals: 6,
-      address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-      icon: '$',
-      coingeckoId: 'usd-coin',
+      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      icon: "$",
     },
   ],
   arbitrum: [
     {
-      id: 'usdt',
-      name: 'Tether USD',
-      symbol: 'USDT',
+      id: "usdt",
+      name: "Tether USD",
+      symbol: "USDT",
       decimals: 6,
-      address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
-      icon: '$',
-      coingeckoId: 'tether',
+      address: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+      icon: "$",
     },
     {
-      id: 'pyusd',
-      name: 'PayPal USD',
-      symbol: 'PYUSD',
+      id: "pyusd",
+      name: "PayPal USD",
+      symbol: "PYUSD",
       decimals: 6,
-      address: '0x52A8845DF664D76C69d2EEa607CD793565aF42B8',
-      icon: '$',
-      coingeckoId: 'paypal-usd',
+      address: "0x52A8845DF664D76C69d2EEa607CD793565aF42B8",
+      icon: "$",
     },
   ],
 };
 
 // Helper functions
 export function getChainById(chainId: string): Chain | undefined {
-  return chains.find(chain => chain.id === chainId);
+  return chains.find((chain) => chain.id === chainId);
 }
 
 export function getTokensByChain(chainId: string): Token[] {
@@ -101,10 +89,9 @@ export function getTokensByChain(chainId: string): Token[] {
 
 export function getTokenById(chainId: string, tokenId: string): Token | undefined {
   const chainTokens = tokens[chainId] || [];
-  return chainTokens.find(token => token.id === tokenId);
+  return chainTokens.find((token) => token.id === tokenId);
 }
 
-
 // Default preferences
-export const DEFAULT_CHAIN = 'base';
-export const DEFAULT_TOKEN = 'usdc';
+export const DEFAULT_CHAIN = "base";
+export const DEFAULT_TOKEN = "usdc";
