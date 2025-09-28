@@ -38,3 +38,23 @@ export interface NameInKysely {
   createdAt: ColumnType<Date, never, never>;
   updatedAt: ColumnType<Date, never, string | undefined>;
 }
+
+export interface TxnInKysely {
+  id: ColumnType<number, never, never>;
+  fromEns: string;
+  toEns: string;
+  bubbleAmount: number;
+  usdAmount: string;
+  message: string | null;
+  createdAt: ColumnType<Date, never, never>;
+}
+
+export interface Txn {
+  id: number;
+  fromEns: string;
+  toEns: string;
+  bubbleAmount: number;
+  usdAmount: string;
+  message?: string;
+  createdAt: string;
+}

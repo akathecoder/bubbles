@@ -1,10 +1,11 @@
 import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 
-import type { NameInKysely } from "../models.js";
+import type { NameInKysely, TxnInKysely } from "../models.js";
 
 export interface Database {
   names: NameInKysely;
+  txns: TxnInKysely;
 }
 
 const dialect = new PostgresDialect({
