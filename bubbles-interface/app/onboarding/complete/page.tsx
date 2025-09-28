@@ -16,7 +16,6 @@ interface HomeTutorialProps {
   userData: any;
 }
 
-
 const mockConnections = [
   { name: "Alex Chen", avatar: "/cute-bubble-character-pink.jpg", lastSeen: "2 min ago", bubbles: 12 },
   { name: "Sarah Kim", avatar: "/friendly-bubble-character-blue.jpg", lastSeen: "5 min ago", bubbles: 8 },
@@ -65,7 +64,7 @@ export default function HomeTutorial() {
 
   const handleFinish = () => {
     // Navigate to main app or home page
-    router.push("/");
+    router.push("/home");
   };
 
   if (showCompleteScreen) {
@@ -276,14 +275,14 @@ export default function HomeTutorial() {
                   size="sm"
                   delay={0.5}
                   duration={6}
-                  className="absolute -top-4 -right-4 opacity-30 z-0"
+                  className="absolute -top-4 -right-4 z-0 opacity-30"
                 />
                 <FloatingBubble
                   type={BUBBLE_TYPES[2]}
                   size="sm"
                   delay={1.5}
                   duration={5}
-                  className="absolute -bottom-2 -left-2 opacity-30 z-0"
+                  className="absolute -bottom-2 -left-2 z-0 opacity-30"
                 />
 
                 {/* Bubble list items */}
@@ -299,7 +298,7 @@ export default function HomeTutorial() {
                       <BubbleListItem
                         type={bubble}
                         selected={false}
-                        className="border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all duration-200 hover:scale-[1.02]"
+                        className="border-slate-200 bg-slate-50 transition-all duration-200 hover:scale-[1.02] hover:bg-slate-100"
                       />
                     </motion.div>
                   ))}
@@ -312,7 +311,7 @@ export default function HomeTutorial() {
                   transition={{ delay: 0.6, duration: 0.8 }}
                   className="mt-6 text-center"
                 >
-                  <div className="flex justify-center gap-3 mb-2">
+                  <div className="mb-2 flex justify-center gap-3">
                     {BUBBLE_TYPES.slice(0, 4).map((bubble, i) => (
                       <motion.div
                         key={bubble.name}
@@ -336,9 +335,7 @@ export default function HomeTutorial() {
                       </motion.div>
                     ))}
                   </div>
-                  <p className="text-xs text-slate-500 font-medium">
-                    Each bubble carries real value ✨
-                  </p>
+                  <p className="text-xs font-medium text-slate-500">Each bubble carries real value ✨</p>
                 </motion.div>
               </motion.div>
             )}
