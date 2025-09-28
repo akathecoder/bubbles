@@ -3,7 +3,6 @@
 import { motion } from "motion/react";
 import { History, Users, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { BubbleHistoryItem, ConnectionItem } from "@/components/tabs/tab-components";
 import { useBalance, useAccount } from "wagmi";
@@ -59,10 +58,9 @@ export function HomeTab() {
         className="flex items-center justify-between"
       >
         <div className="flex items-center gap-3">
-          <Avatar className="h-12 w-12 border-2 border-slate-200">
-            <AvatarImage src={avatar} />
-            <AvatarFallback>{displayName[0]?.toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <div className="h-12 w-12 flex items-center justify-center rounded-full border-2 border-slate-200 bg-white text-2xl">
+            {avatar || displayName[0]?.toUpperCase()}
+          </div>
           <div>
             <h1 className="text-xl font-bold text-slate-800">Hi, {displayName}!</h1>
             <p className="text-sm text-slate-600">{ensHandle}.eth</p>

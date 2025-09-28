@@ -2,7 +2,7 @@
 export const ENS_CONFIG = {
   // Main domain for subdomain registration
   // DOMAIN: "offchaindemo.eth",
-  DOMAIN: "0xsparsh.eth",
+  DOMAIN: "bubbles.eth",
 
   // Gateway URL for ENS registration
   // GATEWAY_URL: "https://ens-gateway.gregskril.workers.dev/set",

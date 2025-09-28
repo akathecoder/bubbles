@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { FullConnectionItem } from "@/components/tabs/tab-components";
 import { NFCScanner } from "@/components/nfc-scanner";
@@ -71,8 +72,8 @@ export function ConnectionsTab() {
             key={connection.id}
             connection={connection}
             index={i}
-            onSend={(connection) => {
-              setSelectedConnection(connection);
+            onSend={(selectedConn) => {
+              setSelectedConnection(selectedConn);
               setIsSendSheetOpen(true);
             }}
           />
@@ -102,12 +103,15 @@ export function ConnectionsTab() {
               {/* User Profile Preview */}
               <div className="skeu-card mb-6 rounded-3xl p-6">
                 <div className="flex items-center gap-4">
-                  <div className="skeu-card flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-purple-100 text-3xl">
-                    {scannedUser.avatar}
-                  </div>
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={scannedUser.avatar} />
+                    <AvatarFallback className="text-lg font-bold text-slate-800">
+                      {scannedUser.ensName?.[0]?.toUpperCase() || scannedUser.address.slice(2, 4).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
 
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-slate-800">{scannedUser.ensName}</h3>
+                    <h3 className="text-xl font-bold text-slate-800">{scannedUser.ensName || "Unknown User"}</h3>
                     <p className="font-mono text-sm text-slate-600">
                       {scannedUser.address.slice(0, 6)}...{scannedUser.address.slice(-4)}
                     </p>
@@ -142,7 +146,7 @@ export function ConnectionsTab() {
       <SendBubbleSheet
         open={isSendSheetOpen}
         onOpenChange={setIsSendSheetOpen}
-        connection={selectedConnection}
+        connectionAddress={selectedConnection?.address || null}
       />
     </motion.div>
   );
