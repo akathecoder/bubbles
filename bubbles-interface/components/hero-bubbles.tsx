@@ -1,5 +1,7 @@
 import { memo } from "react";
 import { motion } from "motion/react";
+import { BUBBLE_TYPES } from "@/lib/bubbles";
+import Bubble from "./ui/bubble";
 
 export const HeroBubbles = memo(() => {
   return (
@@ -31,14 +33,14 @@ export const HeroBubbles = memo(() => {
         <div className="relative h-full w-full p-8">
           {/* Orbiting premium bubbles */}
           {[
-            { color: "bubble-pink", size: "w-12 h-12", angle: 0, emote: "💝" },
-            { color: "bubble-blue", size: "w-10 h-10", angle: 120, emote: "🧠" },
-            { color: "bubble-green", size: "w-8 h-8", angle: 240, emote: "🌱" },
-            { color: "bubble-yellow", size: "w-16 h-16", angle: 300, emote: "💪" },
+            { type: BUBBLE_TYPES[0], size: "w-12 h-12", angle: 0 },
+            { type: BUBBLE_TYPES[1], size: "w-10 h-10", angle: 120 },
+            { type: BUBBLE_TYPES[2], size: "w-8 h-8", angle: 240 },
+            { type: BUBBLE_TYPES[3], size: "w-16 h-16", angle: 300 },
           ].map((bubble, i) => (
             <motion.div
               key={i}
-              className={`absolute ${bubble.size} ${bubble.color} flex items-center justify-center rounded-full text-xl`}
+              className={`absolute ${bubble.size} flex items-center justify-center rounded-full text-xl`}
               style={{
                 top: `${Math.random() * 100}%`,
                 left: `${Math.random() * 100}%`,
@@ -61,9 +63,7 @@ export const HeroBubbles = memo(() => {
                 },
               }}
             >
-              <span>{bubble.emote}</span>
-              <div className="absolute inset-1 rounded-full bg-white/30" />
-              <div className="absolute top-2 left-2 h-1 w-1 rounded-full bg-white/60 blur-sm" />
+              <Bubble type={bubble.type} />
             </motion.div>
           ))}
         </div>

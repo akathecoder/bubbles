@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { BubbleType } from "@/lib/bubbles";
+import { BUBBLE_ASSETS, BubbleType } from "@/lib/bubbles";
 import Image from "next/image";
 
 export interface BubbleProps {
@@ -21,14 +21,6 @@ const sizeClasses = {
   xl: "h-20 w-20 text-3xl",
 };
 
-// Mapping of bubble types to transparent sticker assets
-const bubbleAssets: Record<string, string> = {
-  "Kind": "/heart-transparent.png",
-  "Insightful": "/brain-transparent.png",
-  "Cool": "/hug-transparent.png",
-  "Inspiring": "/heart-transparent.png", // fallback to heart for now
-};
-
 const Bubble = ({
   type,
   size = "md",
@@ -44,56 +36,66 @@ const Bubble = ({
       {/* Main bubble */}
       <div
         className={cn(
-          "relative flex items-center justify-center rounded-full",
-          `bg-gradient-to-br ${type.color}`,
+          "relative flex aspect-square items-center justify-center rounded-full",
+          `bg-gradient-to-br`,
           sizeClasses[size],
           interactive && "cursor-pointer transition-transform hover:scale-105",
-          className
+          className,
         )}
         onClick={onClick}
       >
+        <Image
+          src={"/bubbles-icon.png"}
+          alt={type.name}
+          className="absolute inset-0 h-full w-full object-contain drop-shadow-sm"
+          width={512}
+          height={512}
+        />
+
         {/* Layered bubble background */}
         <div className="absolute inset-0 rounded-full">
           {/* Base bubble texture */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/30 via-transparent to-black/10" />
 
-          {/* Premium variant effects */}
-          {variant === "premium" && (
-            <>
-              {/* Inner bubble with realistic depth */}
-              <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/40 via-transparent to-black/5" />
-              {/* Primary highlight spot */}
-              <div className={cn(
+          <>
+            {/* Inner bubble with realistic depth */}
+            <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/40 via-transparent to-black/5" />
+            {/* Primary highlight spot */}
+            <div
+              className={cn(
                 "absolute rounded-full bg-white/80 blur-sm",
-                size === "sm" ? "top-1 left-1 h-1 w-1" :
-                size === "md" ? "top-2 left-2 h-2 w-2" :
-                size === "lg" ? "top-3 left-3 h-3 w-3" :
-                "top-4 left-4 h-4 w-4"
-              )} />
-              {/* Secondary highlight */}
-              <div className={cn(
+                size === "sm"
+                  ? "top-1 left-1 h-1 w-1"
+                  : size === "md"
+                    ? "top-2 left-2 h-2 w-2"
+                    : size === "lg"
+                      ? "top-3 left-3 h-3 w-3"
+                      : "top-4 left-4 h-4 w-4",
+              )}
+            />
+            {/* Secondary highlight */}
+            <div
+              className={cn(
                 "absolute rounded-full bg-white/60 blur-sm",
-                size === "sm" ? "top-1.5 left-1.5 h-0.5 w-0.5" :
-                size === "md" ? "top-3 left-3 h-1 w-1" :
-                size === "lg" ? "top-4 left-4 h-1.5 w-1.5" :
-                "top-5 left-5 h-2 w-2"
-              )} />
-              {/* Rim lighting */}
-              <div className="absolute inset-0 rounded-full ring-1 ring-white/20 ring-inset" />
-            </>
-          )}
+                size === "sm"
+                  ? "top-1.5 left-1.5 h-0.5 w-0.5"
+                  : size === "md"
+                    ? "top-3 left-3 h-1 w-1"
+                    : size === "lg"
+                      ? "top-4 left-4 h-1.5 w-1.5"
+                      : "top-5 left-5 h-2 w-2",
+              )}
+            />
+            {/* Rim lighting */}
+            <div className="absolute inset-0 rounded-full ring-1 ring-white/20 ring-inset" />
+          </>
         </div>
 
-        {/* Default variant inner glow */}
-        {variant === "default" && (
-          <div className="absolute inset-1 rounded-full bg-white/20" />
-        )}
-
         {/* Sticker overlay (if available) or emoji fallback */}
-        {bubbleAssets[type.name] ? (
+        {BUBBLE_ASSETS[type.name] ? (
           <div className="relative z-10 flex items-center justify-center">
             <Image
-              src={bubbleAssets[type.name]}
+              src={BUBBLE_ASSETS[type.name]}
               alt={type.name}
               width={size === "sm" ? 20 : size === "md" ? 28 : size === "lg" ? 36 : 44}
               height={size === "sm" ? 20 : size === "md" ? 28 : size === "lg" ? 36 : 44}
@@ -106,7 +108,7 @@ const Bubble = ({
 
         {/* Value badge */}
         {showValue && (
-          <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-slate-800 shadow-sm">
+          <div className="absolute -right-1 -bottom-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-slate-800 shadow-sm">
             ${type.value}
           </div>
         )}
@@ -163,7 +165,11 @@ export const FloatingBubble = ({
         ease: "easeInOut",
       }}
     >
-      <Bubble type={type} size={size} variant="premium" />
+      <Bubble
+        type={type}
+        size={size}
+        variant="premium"
+      />
     </motion.div>
   );
 };
@@ -204,7 +210,11 @@ export const OrbitingBubble = ({
         },
       }}
     >
-      <Bubble type={type} size={size} variant="premium" />
+      <Bubble
+        type={type}
+        size={size}
+        variant="premium"
+      />
     </motion.div>
   );
 };
@@ -232,17 +242,21 @@ export const BubbleListItem = ({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "bg-slate-50 hover:bg-slate-100 flex items-center gap-4 rounded-2xl p-4 transition-colors border cursor-pointer",
+        "flex cursor-pointer items-center gap-4 rounded-2xl border bg-slate-50 p-4 transition-colors hover:bg-slate-100",
         selected ? "border-blue-300 bg-blue-50" : "border-slate-200",
-        className
+        className,
       )}
       onClick={onClick}
     >
-      <Bubble type={type} size="md" interactive={false} />
+      <Bubble
+        type={type}
+        size="md"
+        interactive={false}
+      />
 
       <div className="flex-1">
         <div className="font-bold text-slate-800">{title || type.name}</div>
-        <div className="text-slate-600 text-sm">{subtitle || type.description}</div>
+        <div className="text-sm text-slate-600">{subtitle || type.description}</div>
       </div>
 
       <div className="text-right">

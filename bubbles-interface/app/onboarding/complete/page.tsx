@@ -6,19 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Smartphone, Heart, Sparkles, Zap, Users, Gift, ArrowRight, CheckCircle } from "lucide-react";
+import { Smartphone, Heart, Sparkles, Zap, Users, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { NFCAnimation } from "@/components/ui/nfc-animation";
+import { Bubble, BubbleListItem, FloatingBubble } from "@/components/ui/bubble";
+import { BUBBLE_TYPES } from "@/lib/bubbles";
 
 interface HomeTutorialProps {
   userData: any;
 }
 
-const bubbleTypes = [
-  { emoji: "🌸", name: "Kind", color: "from-pink-400 to-rose-500", description: "For thoughtful gestures" },
-  { emoji: "🔥", name: "Inspiring", color: "from-orange-400 to-red-500", description: "For motivational moments" },
-  { emoji: "💡", name: "Insightful", color: "from-yellow-400 to-amber-500", description: "For brilliant ideas" },
-  { emoji: "🎸", name: "Cool", color: "from-blue-400 to-indigo-500", description: "For awesome vibes" },
-];
 
 const mockConnections = [
   { name: "Alex Chen", avatar: "/cute-bubble-character-pink.jpg", lastSeen: "2 min ago", bubbles: 12 },
@@ -103,7 +100,7 @@ export default function HomeTutorial() {
             transition={{ delay: 0.3, duration: 0.6 }}
             className="mb-12"
           >
-            <div className="mx-auto h-32 w-32 rounded-full bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center text-6xl skeu-card">
+            <div className="skeu-card mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-blue-100 text-6xl">
               ✨
             </div>
           </motion.div>
@@ -214,15 +211,9 @@ export default function HomeTutorial() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="skeu-card rounded-3xl p-8 mb-6"
+          className="skeu-card mb-6 rounded-3xl p-8"
         >
           <div className="mb-6 flex items-center justify-between">
-            <Badge
-              variant="secondary"
-              className="rounded-full bg-blue-100 text-blue-700 border-blue-200"
-            >
-              Step {tutorialStep + 1} of 4
-            </Badge>
             <div className="flex gap-2">
               {tutorialSteps.map((_, i) => (
                 <div
@@ -236,140 +227,160 @@ export default function HomeTutorial() {
           </div>
 
           <h3 className="mb-3 text-xl font-bold text-slate-800">{currentStep.title}</h3>
-          <p className="text-slate-600 mb-6 leading-relaxed">{currentStep.description}</p>
+          <p className="mb-6 leading-relaxed text-slate-600">{currentStep.description}</p>
 
-        <AnimatePresence mode="wait">
-          {currentStep.component === "welcome" && (
-            <motion.div
-              key="welcome"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="py-8 text-center"
-            >
-              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-100 to-rose-100 skeu-card">
-                <Heart className="h-10 w-10 text-rose-600" />
-              </div>
-              <p className="text-slate-600 leading-relaxed">
-                Bubbles is where compliments meet real value. Connect with people IRL and send meaningful appreciation
-                that matters.
-              </p>
-            </motion.div>
-          )}
+          <AnimatePresence mode="wait">
+            {currentStep.component === "welcome" && (
+              <motion.div
+                key="welcome"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="py-8 text-center"
+              >
+                <div className="skeu-card mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-100 to-rose-100">
+                  <Heart className="h-10 w-10 text-rose-600" />
+                </div>
+                <p className="leading-relaxed text-slate-600">
+                  Bubbles is where compliments meet real value. Connect with people IRL and send meaningful appreciation
+                  that matters.
+                </p>
+              </motion.div>
+            )}
 
-          {currentStep.component === "nfc-demo" && (
-            <motion.div
-              key="nfc-demo"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="py-8 text-center"
-            >
-              <div className="relative mb-6">
+            {currentStep.component === "nfc-demo" && (
+              <motion.div
+                key="nfc-demo"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="py-8 text-center"
+              >
+                <div className="relative mb-6">
+                  <NFCAnimation />
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep.component === "bubble-types" && (
+              <motion.div
+                key="bubble-types"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="relative space-y-3"
+              >
+                {/* Background floating bubbles for atmosphere */}
+                <FloatingBubble
+                  type={BUBBLE_TYPES[0]}
+                  size="sm"
+                  delay={0.5}
+                  duration={6}
+                  className="absolute -top-4 -right-4 opacity-30 z-0"
+                />
+                <FloatingBubble
+                  type={BUBBLE_TYPES[2]}
+                  size="sm"
+                  delay={1.5}
+                  duration={5}
+                  className="absolute -bottom-2 -left-2 opacity-30 z-0"
+                />
+
+                {/* Bubble list items */}
+                <div className="relative z-10">
+                  {BUBBLE_TYPES.map((bubble, i) => (
+                    <motion.div
+                      key={bubble.name}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      className="mb-3"
+                    >
+                      <BubbleListItem
+                        type={bubble}
+                        selected={false}
+                        className="border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all duration-200 hover:scale-[1.02]"
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Showcase animation */}
                 <motion.div
-                  className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-100 to-indigo-100 skeu-card"
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
+                  className="mt-6 text-center"
                 >
-                  <Smartphone className="h-10 w-10 text-blue-600" />
+                  <div className="flex justify-center gap-3 mb-2">
+                    {BUBBLE_TYPES.slice(0, 4).map((bubble, i) => (
+                      <motion.div
+                        key={bubble.name}
+                        animate={{
+                          scale: [1, 1.1, 1],
+                          rotate: [0, 5, -5, 0],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          delay: i * 0.3,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        <Bubble
+                          type={bubble}
+                          size="md"
+                          variant="premium"
+                          animate
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Each bubble carries real value ✨
+                  </p>
                 </motion.div>
+              </motion.div>
+            )}
 
-                {/* NFC waves animation */}
-                {[0, 1, 2].map((i) => (
+            {currentStep.component === "connections" && (
+              <motion.div
+                key="connections"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-3"
+              >
+                {mockConnections.map((connection, i) => (
                   <motion.div
-                    key={i}
-                    className="border-blue-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
-                    style={{
-                      width: `${80 + i * 20}px`,
-                      height: `${80 + i * 20}px`,
-                    }}
-                    animate={{
-                      scale: [0.8, 1.2],
-                      opacity: [0.6, 0],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Number.POSITIVE_INFINITY,
-                      delay: i * 0.3,
-                    }}
-                  />
-                ))}
-              </div>
-              <p className="text-slate-600 leading-relaxed">
-                When you get an NFC wristband, you'll be able to connect with a simple tap!
-              </p>
-            </motion.div>
-          )}
-
-          {currentStep.component === "bubble-types" && (
-            <motion.div
-              key="bubble-types"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-3"
-            >
-              {bubbleTypes.map((bubble, i) => (
-                <motion.div
-                  key={bubble.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-slate-50 hover:bg-slate-100 flex items-center gap-4 rounded-2xl p-4 transition-colors border border-slate-200"
-                >
-                  <div
-                    className={`h-12 w-12 rounded-xl bg-gradient-to-br ${bubble.color} flex items-center justify-center text-xl`}
+                    key={connection.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4"
                   >
-                    {bubble.emoji}
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-bold text-slate-800">{bubble.name}</div>
-                    <div className="text-slate-600 text-sm">{bubble.description}</div>
-                  </div>
-                  <Gift className="text-slate-500 h-5 w-5" />
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-
-          {currentStep.component === "connections" && (
-            <motion.div
-              key="connections"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-3"
-            >
-              {mockConnections.map((connection, i) => (
-                <motion.div
-                  key={connection.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-slate-50 flex items-center gap-4 rounded-2xl p-4 border border-slate-200"
-                >
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={connection.avatar || "/placeholder.svg"} />
-                    <AvatarFallback>{connection.name[0]}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="font-bold text-slate-800">{connection.name}</div>
-                    <div className="text-slate-600 text-sm">{connection.lastSeen}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-slate-800">{connection.bubbles} bubbles</div>
-                    <div className="text-slate-600 text-xs">sent</div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={connection.avatar || "/placeholder.svg"} />
+                      <AvatarFallback>{connection.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="font-bold text-slate-800">{connection.name}</div>
+                      <div className="text-sm text-slate-600">{connection.lastSeen}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-slate-800">{connection.bubbles} bubbles</div>
+                      <div className="text-xs text-slate-600">sent</div>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <Button
             onClick={nextStep}
             size="lg"
-            className="skeu-button font-borel h-16 w-full rounded-3xl mt-6"
+            className="skeu-button font-borel mt-6 h-16 w-full rounded-3xl"
           >
             {tutorialStep < tutorialSteps.length - 1 ? (
               <>
@@ -396,12 +407,12 @@ export default function HomeTutorial() {
         >
           <div className="skeu-card rounded-3xl p-6 text-center opacity-60">
             <Users className="mx-auto mb-3 h-8 w-8 text-slate-500" />
-            <p className="text-sm font-bold text-slate-700 mb-1">My Circle</p>
+            <p className="mb-1 text-sm font-bold text-slate-700">My Circle</p>
             <p className="text-xs text-slate-500">0 connections</p>
           </div>
           <div className="skeu-card rounded-3xl p-6 text-center opacity-60">
             <Zap className="mx-auto mb-3 h-8 w-8 text-slate-500" />
-            <p className="text-sm font-bold text-slate-700 mb-1">Scan to Connect</p>
+            <p className="mb-1 text-sm font-bold text-slate-700">Scan to Connect</p>
             <p className="text-xs text-slate-500">Tap wristbands</p>
           </div>
         </motion.div>
