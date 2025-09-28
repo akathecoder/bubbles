@@ -26,7 +26,7 @@ export function HomeTab() {
 
   // Get token balance using wagmi
   const { data: tokenBalance, isLoading: isBalanceLoading } = useBalance({
-    address:,
+    address,
     token: paymentConfig?.tokenAddress,
     chainId: paymentConfig?.chainId || base.id,
     query: {
