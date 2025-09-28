@@ -2,9 +2,11 @@
 export const ENS_CONFIG = {
   // Main domain for subdomain registration
   DOMAIN: "offchaindemo.eth",
+  // DOMAIN: "0xsparsh.eth",
 
   // Gateway URL for ENS registration
   GATEWAY_URL: "https://ens-gateway.gregskril.workers.dev/set",
+  // GATEWAY_URL: "https://bubbles-server.onrender.com/api/ens/set",
 
   // Chain ID for ENS resolution (mainnet)
   CHAIN_ID: 1,
