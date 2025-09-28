@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Smartphone, Heart, Sparkles, Zap, Users, Gift, ArrowRight, CheckCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface HomeTutorialProps {
   userData: any;
@@ -26,6 +27,7 @@ const mockConnections = [
 ];
 
 export default function HomeTutorial() {
+  const router = useRouter();
   const [tutorialStep, setTutorialStep] = useState(0);
   const [showCompleteScreen, setShowCompleteScreen] = useState(false);
 
@@ -64,36 +66,104 @@ export default function HomeTutorial() {
     setShowCompleteScreen(true);
   };
 
+  const handleFinish = () => {
+    // Navigate to main app or home page
+    router.push("/");
+  };
+
   if (showCompleteScreen) {
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="flex min-h-screen items-center justify-center p-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0, scale: 0.98 }}
+        transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+        className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-6"
       >
-        <Card className="glass-effect bubble-shadow w-full max-w-lg p-8 text-center">
+        {/* Premium background elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30" />
+        <div className="texture-noise absolute top-0 left-0 h-full w-full" />
+
+        {/* Main content */}
+        <motion.div
+          initial={{ scale: 0.9, y: 30 }}
+          animate={{ scale: 1, y: 0 }}
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 25,
+            delay: 0.2,
+          }}
+          className="relative z-10 w-full max-w-md text-center"
+        >
+          {/* Success Icon */}
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            className="from-primary via-secondary to-accent mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="mb-12"
           >
-            <CheckCircle className="h-10 w-10 text-white" />
+            <div className="mx-auto h-32 w-32 rounded-full bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center text-6xl skeu-card">
+              ✨
+            </div>
           </motion.div>
 
-          <h2 className="mb-4 text-2xl font-bold">You're all set!</h2>
-          <p className="text-muted-foreground mb-8">
-            Welcome to Bubbles, {"anon"}! Start spreading joy and meaningful connections.
-          </p>
-
-          <Button
-            className="from-primary via-secondary to-accent w-full rounded-xl bg-gradient-to-r transition-all duration-300 hover:shadow-lg"
-            size="lg"
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="mb-12"
           >
-            <Sparkles className="mr-2 h-4 w-4" />
-            Start Using Bubbles
-          </Button>
-        </Card>
+            <h1
+              className="font-borel mb-4 text-4xl font-bold tracking-tight text-slate-800"
+              style={{
+                textShadow: "0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
+              }}
+            >
+              You're All Set!
+            </h1>
+            <p className="text-lg font-medium text-slate-600">
+              Welcome to Bubbles! Start spreading joy and meaningful connections.
+            </p>
+          </motion.div>
+
+          {/* Continue Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Button
+              onClick={handleFinish}
+              size="lg"
+              className="skeu-button font-borel h-16 w-full rounded-3xl"
+            >
+              <Sparkles className="mr-2 h-5 w-5" />
+              <span className="-mb-2 align-text-bottom text-xl leading-0">Start Using Bubbles ✨</span>
+              <ArrowRight className="ml-2 h-5 w-5" />
+              {/* Button shimmer effect */}
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+            </Button>
+          </motion.div>
+
+          {/* Progress dots */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="mt-12 flex justify-center"
+          >
+            <div className="flex gap-2">
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-2 w-2 rounded-full bg-blue-500"
+                />
+              ))}
+            </div>
+          </motion.div>
+        </motion.div>
       </motion.div>
     );
   }
@@ -104,52 +174,69 @@ export default function HomeTutorial() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="from-background via-muted/30 to-secondary/20 min-h-screen bg-gradient-to-br p-6"
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-6 py-12"
     >
-      {/* Header */}
-      <div className="mb-8 flex items-center justify-between pt-4">
-        <div className="flex items-center gap-3">
-          {/* <Avatar className="border-primary/20 h-10 w-10 border-2">
-            <AvatarImage src={userData.avatar || "/cute-bubble-character-pink.jpg"} />
-            <AvatarFallback>{userData.displayName?.[0] || "U"}</AvatarFallback>
-          </Avatar> */}
-          <div>
-            {/* <h1 className="font-semibold">Hi, {userData.displayName}!</h1>
-            <p className="text-muted-foreground text-sm">{userData.ensHandle}.eth</p> */}
-          </div>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={skipTutorial}
+      {/* Premium background elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30" />
+      <div className="texture-noise absolute top-0 left-0 h-full w-full" />
+
+      {/* Main content container */}
+      <div className="relative z-10 w-full max-w-md">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="mb-8 flex items-center justify-between"
         >
-          Skip
-        </Button>
-      </div>
-
-      {/* Tutorial Card */}
-      <Card className="glass-effect bubble-shadow mb-6 p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <Badge
-            variant="secondary"
-            className="rounded-full"
+          <h1
+            className="font-borel text-2xl font-bold tracking-tight text-slate-800"
+            style={{
+              textShadow: "0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
+            }}
           >
-            Tutorial {tutorialStep + 1}/4
-          </Badge>
-          <div className="flex gap-1">
-            {tutorialSteps.map((_, i) => (
-              <div
-                key={i}
-                className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                  i <= tutorialStep ? "bg-primary" : "bg-muted"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
+            Tutorial
+          </h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={skipTutorial}
+            className="text-slate-600 hover:text-slate-800"
+          >
+            Skip
+          </Button>
+        </motion.div>
 
-        <h3 className="mb-2 text-lg font-semibold">{currentStep.title}</h3>
-        <p className="text-muted-foreground mb-6">{currentStep.description}</p>
+        {/* Tutorial Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="skeu-card rounded-3xl p-8 mb-6"
+        >
+          <div className="mb-6 flex items-center justify-between">
+            <Badge
+              variant="secondary"
+              className="rounded-full bg-blue-100 text-blue-700 border-blue-200"
+            >
+              Step {tutorialStep + 1} of 4
+            </Badge>
+            <div className="flex gap-2">
+              {tutorialSteps.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                    i <= tutorialStep ? "bg-blue-500" : "bg-slate-300"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <h3 className="mb-3 text-xl font-bold text-slate-800">{currentStep.title}</h3>
+          <p className="text-slate-600 mb-6 leading-relaxed">{currentStep.description}</p>
 
         <AnimatePresence mode="wait">
           {currentStep.component === "welcome" && (
@@ -160,10 +247,10 @@ export default function HomeTutorial() {
               exit={{ opacity: 0, y: -20 }}
               className="py-8 text-center"
             >
-              <div className="from-primary to-secondary mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br">
-                <Heart className="h-8 w-8 text-white" />
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-100 to-rose-100 skeu-card">
+                <Heart className="h-10 w-10 text-rose-600" />
               </div>
-              <p className="text-muted-foreground">
+              <p className="text-slate-600 leading-relaxed">
                 Bubbles is where compliments meet real value. Connect with people IRL and send meaningful appreciation
                 that matters.
               </p>
@@ -180,18 +267,18 @@ export default function HomeTutorial() {
             >
               <div className="relative mb-6">
                 <motion.div
-                  className="from-chart-4 to-secondary mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br"
-                  animate={{ scale: [1, 1.1, 1] }}
+                  className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-100 to-indigo-100 skeu-card"
+                  animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
                 >
-                  <Smartphone className="h-8 w-8 text-white" />
+                  <Smartphone className="h-10 w-10 text-blue-600" />
                 </motion.div>
 
                 {/* NFC waves animation */}
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
-                    className="border-primary/30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
+                    className="border-blue-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
                     style={{
                       width: `${80 + i * 20}px`,
                       height: `${80 + i * 20}px`,
@@ -208,10 +295,8 @@ export default function HomeTutorial() {
                   />
                 ))}
               </div>
-              <p className="text-muted-foreground">
-                {/* {userData.nfcConnected
-                  ? "Your wristband is ready! Just tap it against someone else's to connect instantly."
-                  : "When you get an NFC wristband, you'll be able to connect with a simple tap!"} */}
+              <p className="text-slate-600 leading-relaxed">
+                When you get an NFC wristband, you'll be able to connect with a simple tap!
               </p>
             </motion.div>
           )}
@@ -230,7 +315,7 @@ export default function HomeTutorial() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-muted/50 hover:bg-muted/70 flex items-center gap-4 rounded-2xl p-3 transition-colors"
+                  className="bg-slate-50 hover:bg-slate-100 flex items-center gap-4 rounded-2xl p-4 transition-colors border border-slate-200"
                 >
                   <div
                     className={`h-12 w-12 rounded-xl bg-gradient-to-br ${bubble.color} flex items-center justify-center text-xl`}
@@ -238,10 +323,10 @@ export default function HomeTutorial() {
                     {bubble.emoji}
                   </div>
                   <div className="flex-1">
-                    <div className="font-medium">{bubble.name}</div>
-                    <div className="text-muted-foreground text-sm">{bubble.description}</div>
+                    <div className="font-bold text-slate-800">{bubble.name}</div>
+                    <div className="text-slate-600 text-sm">{bubble.description}</div>
                   </div>
-                  <Gift className="text-muted-foreground h-4 w-4" />
+                  <Gift className="text-slate-500 h-5 w-5" />
                 </motion.div>
               ))}
             </motion.div>
@@ -261,19 +346,19 @@ export default function HomeTutorial() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-muted/50 flex items-center gap-4 rounded-2xl p-3"
+                  className="bg-slate-50 flex items-center gap-4 rounded-2xl p-4 border border-slate-200"
                 >
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={connection.avatar || "/placeholder.svg"} />
                     <AvatarFallback>{connection.name[0]}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <div className="font-medium">{connection.name}</div>
-                    <div className="text-muted-foreground text-sm">{connection.lastSeen}</div>
+                    <div className="font-bold text-slate-800">{connection.name}</div>
+                    <div className="text-slate-600 text-sm">{connection.lastSeen}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-medium">{connection.bubbles} bubbles</div>
-                    <div className="text-muted-foreground text-xs">sent</div>
+                    <div className="text-sm font-bold text-slate-800">{connection.bubbles} bubbles</div>
+                    <div className="text-slate-600 text-xs">sent</div>
                   </div>
                 </motion.div>
               ))}
@@ -281,35 +366,45 @@ export default function HomeTutorial() {
           )}
         </AnimatePresence>
 
-        <Button
-          onClick={nextStep}
-          className="from-primary to-secondary mt-6 w-full rounded-xl bg-gradient-to-r transition-all duration-300 hover:shadow-lg"
-          size="lg"
-        >
-          {tutorialStep < tutorialSteps.length - 1 ? (
-            <>
-              Next <ArrowRight className="ml-2 h-4 w-4" />
-            </>
-          ) : (
-            <>
-              Get Started <Sparkles className="ml-2 h-4 w-4" />
-            </>
-          )}
-        </Button>
-      </Card>
+          <Button
+            onClick={nextStep}
+            size="lg"
+            className="skeu-button font-borel h-16 w-full rounded-3xl mt-6"
+          >
+            {tutorialStep < tutorialSteps.length - 1 ? (
+              <>
+                <span className="-mb-2 align-text-bottom text-xl leading-0">Next</span>
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </>
+            ) : (
+              <>
+                <Sparkles className="mr-2 h-5 w-5" />
+                <span className="-mb-2 align-text-bottom text-xl leading-0">Get Started ✨</span>
+              </>
+            )}
+            {/* Button shimmer effect */}
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+          </Button>
+        </motion.div>
 
-      {/* Quick Actions Preview */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="glass-effect bubble-shadow p-4 text-center opacity-50">
-          <Users className="text-muted-foreground mx-auto mb-2 h-6 w-6" />
-          <p className="text-sm font-medium">My Circle</p>
-          <p className="text-muted-foreground text-xs">0 connections</p>
-        </Card>
-        <Card className="glass-effect bubble-shadow p-4 text-center opacity-50">
-          <Zap className="text-muted-foreground mx-auto mb-2 h-6 w-6" />
-          <p className="text-sm font-medium">Scan to Connect</p>
-          <p className="text-muted-foreground text-xs">Tap wristbands</p>
-        </Card>
+        {/* Quick Actions Preview */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="grid grid-cols-2 gap-4"
+        >
+          <div className="skeu-card rounded-3xl p-6 text-center opacity-60">
+            <Users className="mx-auto mb-3 h-8 w-8 text-slate-500" />
+            <p className="text-sm font-bold text-slate-700 mb-1">My Circle</p>
+            <p className="text-xs text-slate-500">0 connections</p>
+          </div>
+          <div className="skeu-card rounded-3xl p-6 text-center opacity-60">
+            <Zap className="mx-auto mb-3 h-8 w-8 text-slate-500" />
+            <p className="text-sm font-bold text-slate-700 mb-1">Scan to Connect</p>
+            <p className="text-xs text-slate-500">Tap wristbands</p>
+          </div>
+        </motion.div>
       </div>
     </motion.div>
   );
