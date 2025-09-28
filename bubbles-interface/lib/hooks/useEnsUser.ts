@@ -1,6 +1,6 @@
 import { useEnsName, useEnsAvatar } from "wagmi";
 import { useBubblesProfile } from "./useEnsTexts";
-import { sepolia } from "viem/chains";
+import { mainnet } from "viem/chains";
 
 export interface EnsUser {
   address: `0x${string}`;
@@ -25,13 +25,13 @@ export function useEnsUser(address: `0x${string}` | undefined): EnsUser {
     error: nameError,
   } = useEnsName({
     address,
-    chainId: sepolia.id,
+    chainId: mainnet.id,
   });
 
   // Get ENS avatar
   const { data: ensAvatar, isLoading: isAvatarLoading } = useEnsAvatar({
     name: ensName || undefined,
-    chainId: sepolia.id,
+    chainId: mainnet.id,
   });
 
   // Get Bubbles profile data from ENS text records

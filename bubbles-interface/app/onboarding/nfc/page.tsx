@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { toast } from "sonner";
 import { createWalletClient, http, keccak256, toHex } from "viem";
-import { baseSepolia } from "viem/chains";
+import { base } from "viem/chains";
 import { usePublicClient } from "wagmi";
 import { useLocalStorage } from "usehooks-ts";
 import { privateKeyToAccount } from "viem/accounts";
@@ -25,16 +25,16 @@ export default function NFCPage() {
   const [nfcAddress, setNfcAddress] = useLocalStorage("nfcAddress", "");
   const { sessionKey, setSessionKey, walletClient } = useSessionKey();
 
-  const baseSepoliaPublicClient = usePublicClient({
-    chainId: baseSepolia.id,
+  const basePublicClient = usePublicClient({
+    chainId: base.id,
   });
-  const baseSepoliaPaymasterClient = useMemo(() => {
-    if (!baseSepoliaPublicClient) return null;
+  const basePaymasterClient = useMemo(() => {
+    if (!basePublicClient) return null;
     return createZeroDevPaymasterClient({
-      chain: baseSepolia,
+      chain: base,
       transport: http(basePaymasterRpc),
     });
-  }, [baseSepoliaPublicClient]);
+  }, [basePublicClient]);
 
   const {
     data: nfcData,
@@ -44,12 +44,12 @@ export default function NFCPage() {
   } = useMutation({
     mutationKey: ["tap nfc"],
     mutationFn: async () => {
-      if (!baseSepoliaPublicClient) throw new Error("No public client");
+      if (!basePublicClient) throw new Error("No public client");
       const paymasterClient = createZeroDevPaymasterClient({
-        chain: baseSepolia,
+        chain: base,
         transport: http(basePaymasterRpc),
       });
-      if (!baseSepoliaPaymasterClient) throw new Error("No paymaster client");
+      if (!basePaymasterClient) throw new Error("No paymaster client");
       if (!paymasterClient) throw new Error("No paymaster client");
       // const nfcAddress = (await execHaloCmdWeb({
       //   name: "get_pkeys",
@@ -71,23 +71,23 @@ export default function NFCPage() {
       const pkey = keccak256(toHex(data.attestSig)) as `0x${string}`;
       const sessionKeyAccount = privateKeyToAccount(pkey);
 
-      const sessionKeyKernelAccount = await createKernelAccount(baseSepoliaPublicClient, {
+      const sessionKeyKernelAccount = await createKernelAccount(basePublicClient, {
         entryPoint: entryPoint,
         kernelVersion: kernelVersion,
         eip7702Account: sessionKeyAccount,
         eip7702Auth: await sessionKeyAccount.signAuthorization({
           address: kernelAddresses.accountImplementationAddress,
-          chainId: baseSepolia.id,
+          chainId: base.id,
           nonce: 0,
         }),
       });
 
       const sessionKeyKernelAccountClient = createKernelAccountClient({
         account: sessionKeyKernelAccount,
-        chain: baseSepolia,
+        chain: base,
         bundlerTransport: http(baseBundlerRpc),
-        paymaster: baseSepoliaPaymasterClient,
-        client: baseSepoliaPublicClient,
+        paymaster: basePaymasterClient,
+        client: basePublicClient,
       });
 
       toast.success("Setting up your account");
@@ -345,16 +345,16 @@ export default function NFCPage() {
 //   isPending: isSign7702Pending,
 // } = useMutation({
 //   mutationFn: async () => {
-//     if (!baseSepoliaPublicClient) throw new Error("No public client");
-//     if (!baseSepoliaPaymasterClient) throw new Error("No paymaster client");
+//     if (!basePublicClient) throw new Error("No public client");
+//     if (!basePaymasterClient) throw new Error("No paymaster client");
 //     // const nfcData = await getNfcAddress();
-//     // const authorisationData = await prepareAuthorization(baseSepoliaPublicClient, {
+//     // const authorisationData = await prepareAuthorization(basePublicClient, {
 //     //   account: nfcData as `0x${string}`,
 //     //   address: kernelAddresses.accountImplementationAddress,
 //     // });
 
 //     // const authRequest = {
-//     //   chainId: baseSepolia.id,
+//     //   chainId: base.id,
 //     //   address: kernelAddresses.accountImplementationAddress,
 //     //   nonce: 0,
 //     // };
@@ -385,14 +385,14 @@ export default function NFCPage() {
 //     // const sessionKeySigner = await toECDSASigner({
 //     //   signer: sessionAccount,
 //     // });
-//     // const permissionPlugin = await toPermissionValidator(baseSepoliaPublicClient, {
+//     // const permissionPlugin = await toPermissionValidator(basePublicClient, {
 //     //   entryPoint: entryPoint,
 //     //   kernelVersion: kernelVersion,
 //     //   signer: sessionKeySigner,
 //     //   policies: [toSudoPolicy({})],
 //     // });
 //     // console.log("PERMISSION PLUGIN CREATED", permissionPlugin);
-//     // const validatorNonce = await getKernelV3Nonce(baseSepoliaPublicClient, signature.etherAddress);
+//     // const validatorNonce = await getKernelV3Nonce(basePublicClient, signature.etherAddress);
 //     // const typedData = await getPluginsEnableTypedData({
 //     //   accountAddress,
 //     //   chainId,
@@ -402,7 +402,7 @@ export default function NFCPage() {
 //     //   validator: regular,
 //     //   validatorNonce,
 //     // });
-//     // const sessionkernelAccount = await createKernelAccount(baseSepoliaPublicClient, {
+//     // const sessionkernelAccount = await createKernelAccount(basePublicClient, {
 //     //   // eip7702Account: nfcData,
 //     //   address: signature.etherAddress as `0x${string}`,
 //     //   entryPoint: entryPoint,
@@ -417,10 +417,10 @@ export default function NFCPage() {
 
 //     // const kernelAccountClient = createKernelAccountClient({
 //     //   account: sessionkernelAccount,
-//     //   chain: baseSepolia,
+//     //   chain: base,
 //     //   bundlerTransport: http(baseBundlerRpc),
-//     //   paymaster: baseSepoliaPaymasterClient,
-//     //   client: baseSepoliaPublicClient,
+//     //   paymaster: basePaymasterClient,
+//     //   client: basePublicClient,
 //     // });
 
 //     // console.log("kernelAccountClient created", kernelAccountClient);
