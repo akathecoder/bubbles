@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const PROJECT_ID = "fefe0be1-b3db-4eff-bbb7-750485bd732c";
+export const PROJECT_ID = process.env.NEXT_PUBLIC_PID;
 export const kernelVersion = KERNEL_V3_3;
 
 export const kernelAddresses = KernelVersionToAddressesMap[kernelVersion];
