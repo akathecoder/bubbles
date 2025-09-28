@@ -1,5 +1,4 @@
 export interface BubbleType {
-  emoji: string;
   name: string;
   description: string;
   value: number; // Base value in USD
@@ -9,7 +8,6 @@ export interface BubbleType {
 
 export const BUBBLE_TYPES: BubbleType[] = [
   {
-    emoji: "🌸",
     name: "Kind",
     description: "For thoughtful gestures",
     value: 0.5, // 500 bubbles = $0.50
@@ -17,7 +15,6 @@ export const BUBBLE_TYPES: BubbleType[] = [
     rarity: "common",
   },
   {
-    emoji: "🔥",
     name: "Inspiring",
     description: "For motivational moments",
     value: 1.0, // 1000 bubbles = $1.00
@@ -25,7 +22,6 @@ export const BUBBLE_TYPES: BubbleType[] = [
     rarity: "uncommon",
   },
   {
-    emoji: "💡",
     name: "Insightful",
     description: "For brilliant ideas",
     value: 1.5, // 1500 bubbles = $1.50
@@ -33,7 +29,6 @@ export const BUBBLE_TYPES: BubbleType[] = [
     rarity: "rare",
   },
   {
-    emoji: "🎸",
     name: "Cool",
     description: "For awesome vibes",
     value: 0.8, // 800 bubbles = $0.80
@@ -52,10 +47,6 @@ export function getBubbleTypesByCategory(category: string): BubbleType[] {
 
 export function getBubbleTypesByRarity(rarity: "common" | "uncommon" | "rare" | "epic"): BubbleType[] {
   return BUBBLE_TYPES.filter((bubble) => bubble.rarity === rarity);
-}
-
-export function getBubbleTypeByEmoji(emoji: string): BubbleType | undefined {
-  return BUBBLE_TYPES.find((bubble) => bubble.emoji === emoji);
 }
 
 // Bubble conversion utilities (10 bubbles = 1 cent)

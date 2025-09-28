@@ -92,19 +92,16 @@ const Bubble = ({
         </div>
 
         {/* Sticker overlay (if available) or emoji fallback */}
-        {BUBBLE_ASSETS[type.name] ? (
-          <div className="relative z-10 flex items-center justify-center">
-            <Image
-              src={BUBBLE_ASSETS[type.name]}
-              alt={type.name}
-              width={size === "sm" ? 20 : size === "md" ? 28 : size === "lg" ? 36 : 44}
-              height={size === "sm" ? 20 : size === "md" ? 28 : size === "lg" ? 36 : 44}
-              className="drop-shadow-sm"
-            />
-          </div>
-        ) : (
-          <span className="relative z-10 select-none">{type.emoji}</span>
-        )}
+
+        <div className="relative z-10 flex items-center justify-center">
+          <Image
+            src={BUBBLE_ASSETS[type.name]}
+            alt={type.name}
+            width={size === "sm" ? 20 : size === "md" ? 28 : size === "lg" ? 36 : 44}
+            height={size === "sm" ? 20 : size === "md" ? 28 : size === "lg" ? 36 : 44}
+            className="drop-shadow-sm"
+          />
+        </div>
 
         {/* Value badge */}
         {showValue && (
