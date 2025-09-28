@@ -6,12 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { useAccount } from "wagmi";
 import { useEnsUser } from "@/lib/hooks/useEnsUser";
 import { parsePreferredPayment } from "@/lib/utils/payment";
+import useSessionKey from "@/lib/hooks/useSessionKey";
 
 export function SettingsTab() {
-  const { address } = useAccount();
-
+  const { walletClient } = useSessionKey();
+  const address = walletClient?.address;
   // Get current user's ENS data
-  const currentUser = useEnsUser(address);
+  const currentUser = useEnsUser(walletClient?.address);
 
   // Parse preferred payment from ENS data
   const paymentConfig = currentUser.preferredPayment ? parsePreferredPayment(currentUser.preferredPayment) : null;

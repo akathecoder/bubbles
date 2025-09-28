@@ -11,11 +11,14 @@ import { base } from "viem/chains";
 import { useEnsUser } from "@/lib/hooks/useEnsUser";
 import { parsePreferredPayment } from "@/lib/utils/payment";
 import { MOCK_BUBBLE_HISTORY, MOCK_CONNECTIONS } from "@/lib/mock-data";
+import useSessionKey from "@/lib/hooks/useSessionKey";
 
 export function HomeTab() {
-  const { address } = useAccount();
-
   // Get current user's ENS data
+  const { walletClient } = useSessionKey();
+
+  const address = walletClient?.address;
+
   const currentUser = useEnsUser(address);
 
   // Parse preferred payment from ENS data
@@ -23,7 +26,7 @@ export function HomeTab() {
 
   // Get token balance using wagmi
   const { data: tokenBalance, isLoading: isBalanceLoading } = useBalance({
-    address,
+    address:,
     token: paymentConfig?.tokenAddress,
     chainId: paymentConfig?.chainId || base.id,
     query: {
@@ -38,7 +41,7 @@ export function HomeTab() {
 
   // Get display data from current user
   const displayName = currentUser.displayName;
-  const ensHandle = currentUser.ensName || `${address?.slice(0, 6)}...${address?.slice(-4)}`;
+  const ensHandle = currentUser.ensName;
   const avatar = currentUser.avatar;
   const preferredSymbol = paymentConfig?.symbol || "USDC";
   const chainName = paymentConfig?.chainName || "Base";
@@ -58,7 +61,7 @@ export function HomeTab() {
         className="flex items-center justify-between"
       >
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 flex items-center justify-center rounded-full border-2 border-slate-200 bg-white text-2xl">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-slate-200 bg-white text-2xl">
             {avatar || displayName[0]?.toUpperCase()}
           </div>
           <div>

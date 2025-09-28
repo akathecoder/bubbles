@@ -28,12 +28,6 @@ export function useEnsUser(address: `0x${string}` | undefined): EnsUser {
     chainId: mainnet.id,
   });
 
-  // Get ENS avatar
-  const { data: ensAvatar, isLoading: isAvatarLoading } = useEnsAvatar({
-    name: ensName || undefined,
-    chainId: mainnet.id,
-  });
-
   // Get Bubbles profile data from ENS text records
   const {
     profileData: ensProfile,
@@ -48,9 +42,9 @@ export function useEnsUser(address: `0x${string}` | undefined): EnsUser {
       ? `${address.slice(0, 6)}...${address.slice(-4)}`
       : "Unknown";
 
-  const avatar = ensProfile?.avatar || ensAvatar || null;
+  const avatar = ensProfile?.avatar || null;
 
-  const isLoading = isNameLoading || isAvatarLoading || isProfileLoading;
+  const isLoading = isNameLoading || isProfileLoading;
 
   const error = nameError || profileError || null;
 
