@@ -95,7 +95,7 @@ export function useProfileData() {
         };
 
         // Submit to ENS gateway (you'll need to set up your own gateway)
-        const response = await fetch("https://ens-gateway.gregskril.workers.dev/set", {
+        const response = await fetch(ENS_CONFIG.GATEWAY_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -124,6 +124,7 @@ export function useProfileData() {
       console.error("Profile registration error:", error);
       toast.error(error?.message || "Profile registration failed");
     },
+    throwOnError: true,
   });
 
   return {
