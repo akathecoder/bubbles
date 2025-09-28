@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { NFCAnimation } from "@/components/ui/nfc-animation";
 
 interface ScannedUser {
-  address: string;
+  address: `0x${string}`;
   ensName?: string;
   avatar?: string;
 }

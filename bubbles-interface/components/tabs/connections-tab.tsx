@@ -9,28 +9,64 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { FullConnectionItem } from "@/components/tabs/tab-components";
 import { NFCScanner } from "@/components/nfc-scanner";
 import { SendBubbleSheet } from "@/components/send-bubble-sheet";
-import { MOCK_CONNECTIONS } from "@/lib/mock-data";
+import { MOCK_CONNECTIONS, MockConnection, StoredConnection } from "@/lib/mock-data";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useEnsUser } from "@/lib/hooks/useEnsUser";
 import { toast } from "sonner";
 
 export function ConnectionsTab() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isSendSheetOpen, setIsSendSheetOpen] = useState(false);
-  const [selectedConnection, setSelectedConnection] = useState<(typeof MOCK_CONNECTIONS)[0] | null>(null);
+  const [selectedConnection, setSelectedConnection] = useState<MockConnection | null>(null);
   const [scannedUser, setScannedUser] = useState<{
-    address: string;
+    address: `0x${string}`;
     ensName?: string;
     avatar?: string;
   } | null>(null);
 
-  const handleScanSuccess = (user: { address: string; ensName?: string; avatar?: string }) => {
+  // localStorage for user connections
+  const [storedConnections, setStoredConnections] = useLocalStorage<StoredConnection[]>("bubbles-connections", []);
+
+  // Get ENS data for the scanned user to fetch fresh data
+  const scannedUserEns = useEnsUser(scannedUser?.address);
+
+  // Combine mock connections with stored connections for display
+  const allConnections = [
+    ...MOCK_CONNECTIONS.map(conn => ({ ...conn, source: 'mock' as const })),
+    ...storedConnections.map(conn => ({ ...conn, source: 'stored' as const }))
+  ];
+
+  const handleScanSuccess = (user: { address: `0x${string}`; ensName?: string; avatar?: string }) => {
     setScannedUser(user);
     setIsSheetOpen(true);
   };
 
   const handleAddConnection = () => {
-    if (scannedUser) {
-      // Add to connections list (in real app, this would be an API call)
-      toast.success(`Added ${scannedUser.ensName} to your connections!`);
+    if (scannedUser && scannedUserEns) {
+      // Check if connection already exists
+      const existingConnection = storedConnections.find(conn => conn.address === scannedUser.address);
+
+      if (existingConnection) {
+        toast.error("This connection already exists!");
+        return;
+      }
+
+      // Create new connection with ENS data
+      const newConnection: StoredConnection = {
+        id: `stored-${Date.now()}`,
+        address: scannedUser.address,
+        ensName: scannedUserEns.ensName || undefined,
+        avatar: scannedUserEns.avatar || undefined,
+        addedAt: new Date().toISOString(),
+        lastSeen: "just now",
+        bubblesSent: 0,
+        bubblesReceived: 0,
+      };
+
+      // Add to localStorage
+      setStoredConnections(prev => [...prev, newConnection]);
+
+      toast.success(`Added ${scannedUserEns.displayName} to your connections!`);
       setIsSheetOpen(false);
       setScannedUser(null);
     }

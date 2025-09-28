@@ -81,36 +81,6 @@ export function SettingsTab() {
           </div>
         </div>
       </motion.div>
-
-      {/* Profile Settings */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="skeu-card rounded-3xl p-6"
-      >
-        <h2 className="mb-6 text-xl font-bold text-slate-800">Profile</h2>
-
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={avatar} />
-              <AvatarFallback>{displayName[0]?.toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="font-bold text-slate-800">{displayName}</div>
-              <div className="text-sm text-slate-600">{ensHandle}</div>
-              {currentUser.description && <div className="mt-1 text-xs text-slate-500">{currentUser.description}</div>}
-            </div>
-            <Badge
-              variant="secondary"
-              className="text-xs text-slate-500"
-            >
-              ENS Profile
-            </Badge>
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 }
