@@ -238,9 +238,13 @@ export default function HomeTutorial() {
                 exit={{ opacity: 0, y: -20 }}
                 className="py-8 text-center"
               >
-                <div className="skeu-card mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-100 to-rose-100">
-                  <Heart className="h-10 w-10 text-rose-600" />
-                </div>
+                <Bubble
+                  type={BUBBLE_TYPES[3]}
+                  size="xl"
+                  variant="premium"
+                  animate
+                  className="mx-auto mb-4"
+                />
                 <p className="leading-relaxed text-slate-600">
                   Bubbles is where compliments meet real value. Connect with people IRL and send meaningful appreciation
                   that matters.
@@ -391,25 +395,6 @@ export default function HomeTutorial() {
             {/* Button shimmer effect */}
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
           </Button>
-        </motion.div>
-
-        {/* Quick Actions Preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="grid grid-cols-2 gap-4"
-        >
-          <div className="skeu-card rounded-3xl p-6 text-center opacity-60">
-            <Users className="mx-auto mb-3 h-8 w-8 text-slate-500" />
-            <p className="mb-1 text-sm font-bold text-slate-700">My Circle</p>
-            <p className="text-xs text-slate-500">0 connections</p>
-          </div>
-          <div className="skeu-card rounded-3xl p-6 text-center opacity-60">
-            <Zap className="mx-auto mb-3 h-8 w-8 text-slate-500" />
-            <p className="mb-1 text-sm font-bold text-slate-700">Scan to Connect</p>
-            <p className="text-xs text-slate-500">Tap wristbands</p>
-          </div>
         </motion.div>
       </div>
     </motion.div>

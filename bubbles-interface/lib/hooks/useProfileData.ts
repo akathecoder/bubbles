@@ -105,8 +105,7 @@ export function useProfileData() {
 
         const body = (await response.json()) as { success: boolean };
         if (!response.ok || !body.success) {
-          const error = await response.json();
-          throw new Error(error.message || "Registration failed");
+          throw new Error("Registration failed");
         }
 
         return formData;

@@ -9,35 +9,28 @@ import { Gift } from "lucide-react";
 import { motion } from "motion/react";
 import { memo, useState } from "react";
 import { toast } from "sonner";
-
-interface Connection {
-  id: string;
-  name: string;
-  avatar?: string;
-  lastSeen?: string;
-  bubblesSent?: number;
-  bubblesReceived?: number;
-}
+import { useEnsUser } from "@/lib/hooks/useEnsUser";
 
 interface SendBubbleSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  connection: Connection | null;
+  connectionAddress: `0x${string}` | null;
   onSendComplete?: (data: {
-    connection: Connection;
+    connectionAddress: `0x${string}`;
     bubbleType: (typeof BUBBLE_TYPES)[0];
     amount: number;
     totalValue: number;
-    note?: string;
   }) => void;
 }
 
-export function SendBubbleSheet({ open, onOpenChange, connection, onSendComplete }: SendBubbleSheetProps) {
+export function SendBubbleSheet({ open, onOpenChange, connectionAddress, onSendComplete }: SendBubbleSheetProps) {
   const [selectedBubbleType, setSelectedBubbleType] = useState(BUBBLE_TYPES[0]);
   const [bubbleAmount, setBubbleAmount] = useState(1);
-  const [note, setNote] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Get ENS data for the connection
+  const connectionUser = useEnsUser(connectionAddress ?? undefined);
 
   const { mutate: sendBubble } = useMutation({
     mutationFn: async () => {
@@ -50,15 +43,14 @@ export function SendBubbleSheet({ open, onOpenChange, connection, onSendComplete
       setShowSuccess(true);
 
       const sendData = {
-        connection: connection!,
+        connectionAddress: connectionAddress!,
         bubbleType: selectedBubbleType,
         amount: bubbleAmount,
         totalValue: bubbleAmount * selectedBubbleType.value,
-        note: note || undefined,
       };
 
       toast.success(
-        `Sent ${bubbleAmount} ${selectedBubbleType.name} bubble${bubbleAmount > 1 ? "s" : ""} to ${connection?.name}!`,
+        `Sent ${bubbleAmount} ${selectedBubbleType.name} bubble${bubbleAmount > 1 ? "s" : ""} to ${connectionUser.displayName}!`,
       );
 
       // Call callback if provided
@@ -77,7 +69,7 @@ export function SendBubbleSheet({ open, onOpenChange, connection, onSendComplete
 
   const totalValue = bubbleAmount * selectedBubbleType.value;
 
-  if (!connection) return null;
+  if (!connectionAddress) return null;
 
   return (
     <Sheet
@@ -88,7 +80,9 @@ export function SendBubbleSheet({ open, onOpenChange, connection, onSendComplete
         side="bottom"
         className="max-h-[90vh] min-h-[70vh]"
       >
-        <SheetHeader>{!showSuccess && <SheetTitle>Send Bubbles to {connection.name}</SheetTitle>}</SheetHeader>
+        <SheetHeader>
+          {!showSuccess && <SheetTitle>Send Bubbles to {connectionUser.displayName}</SheetTitle>}
+        </SheetHeader>
 
         {!showSuccess ? (
           <div className="space-y-6 p-6 pt-2">
@@ -192,7 +186,8 @@ export function SendBubbleSheet({ open, onOpenChange, connection, onSendComplete
             >
               <h2 className="mb-2 text-2xl font-bold text-slate-800">Bubbles Sent! 🎉</h2>
               <p className="text-lg text-slate-600">
-                Sent {bubbleAmount} {selectedBubbleType.name} bubble{bubbleAmount > 1 ? "s" : ""} to {connection.name}
+                Sent {bubbleAmount} {selectedBubbleType.name} bubble{bubbleAmount > 1 ? "s" : ""} to{" "}
+                {connectionUser.displayName}
               </p>
               <p className="mt-2 text-sm text-slate-500">They'll receive ${totalValue} in their preferred token</p>
             </motion.div>

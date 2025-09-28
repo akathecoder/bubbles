@@ -60,13 +60,14 @@ export default function NFCPage() {
       // const nfcAddress = (await execHaloCmdWeb({
       //   name: "get_pkeys",
       // })) as Promise<{ etherAddresses: Record<string, `0x${string}`> }>;
-      console.log(keccak256("0xb00b1e5"));
 
       const signature = (await execHaloCmdWeb({
         name: "sign",
         keyNo: 1,
         message: keccak256("0xb00b1e5"),
       })) as CommandResponse;
+
+      toast.success(`NFC Tag scanned: ${signature.etherAddress}`);
 
       const pkey = keccak256(signature.signature.ether) as `0x${string}`;
       const sessionKeyAccount = privateKeyToAccount(pkey);
@@ -89,6 +90,8 @@ export default function NFCPage() {
         paymaster: baseSepoliaPaymasterClient,
         client: baseSepoliaPublicClient,
       });
+
+      toast.success("Setting up your account");
 
       const tx = await sessionKeyKernelAccountClient.sendTransaction({
         calls: [

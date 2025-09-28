@@ -23,7 +23,7 @@ export function ScanTab() {
   const handleSendComplete = (data: any) => {
     console.log("Bubble sent via scan:", data);
     // You could add the user to connections here
-    toast.success(`Added ${data.connection.ensName} to your connections!`);
+    toast.success(`Bubble sent successfully!`);
   };
 
   return (
@@ -63,15 +63,7 @@ export function ScanTab() {
         <SendBubbleSheet
           open={isSendSheetOpen}
           onOpenChange={setIsSendSheetOpen}
-          connection={
-            scannedUser
-              ? {
-                  id: scannedUser.address,
-                  name: scannedUser.ensName || "Unknown User",
-                  avatar: scannedUser.avatar,
-                }
-              : null
-          }
+          connectionAddress={scannedUser?.address as `0x${string}` || null}
           onSendComplete={handleSendComplete}
         />
       </div>

@@ -1,28 +1,27 @@
-import { useQuery } from '@tanstack/react-query'
-import { usePublicClient } from 'wagmi'
+import { useQuery } from "@tanstack/react-query";
+import { sepolia } from "viem/chains";
+import { usePublicClient } from "wagmi";
 
 export type UseEnsTextsProps = {
-  name: string
-  keys: string[]
-  enabled?: boolean
-}
+  name: string;
+  keys: string[];
+  enabled?: boolean;
+};
 
 export function useEnsTexts({ name, keys, enabled = true }: UseEnsTextsProps) {
-  const wagmiClient = usePublicClient({ chainId: 1 })
+  const wagmiClient = usePublicClient({ chainId: sepolia.id });
 
   return useQuery({
-    queryKey: ['ens-texts', name, keys],
+    queryKey: ["ens-texts", name, keys],
     queryFn: async () => {
       if (!wagmiClient) {
         throw new Error("Public client not available");
       }
 
-      const promises = keys.map((key) =>
-        wagmiClient.getEnsText({ name, key }).catch(() => null)
-      )
-      const results = await Promise.all(promises)
+      const promises = keys.map((key) => wagmiClient.getEnsText({ name, key }).catch(() => null));
+      const results = await Promise.all(promises);
 
-      return keys.map((key, index) => ({ key, value: results[index] }))
+      return keys.map((key, index) => ({ key, value: results[index] }));
     },
     enabled: enabled && !!name && !!wagmiClient,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -33,7 +32,7 @@ export function useEnsTexts({ name, keys, enabled = true }: UseEnsTextsProps) {
       }
       return failureCount < 3;
     },
-  })
+  });
 }
 
 // Helper hook specifically for Bubbles profile data
@@ -44,19 +43,15 @@ export function useBubblesProfile(ensName: string) {
     error,
   } = useEnsTexts({
     name: ensName,
-    keys: [
-      'description',
-      'bubbles.preferred-payment',
-      'bubbles.avatar',
-    ],
+    keys: ["description", "bubbles.preferred-payment", "bubbles.avatar"],
     enabled: !!ensName,
   });
 
   const profileData = textRecords
     ? {
-        description: textRecords.find((r) => r.key === 'description')?.value || "",
-        preferredPayment: textRecords.find((r) => r.key === 'bubbles.preferred-payment')?.value || "",
-        avatar: textRecords.find((r) => r.key === 'bubbles.avatar')?.value || "",
+        description: textRecords.find((r) => r.key === "description")?.value || "",
+        preferredPayment: textRecords.find((r) => r.key === "bubbles.preferred-payment")?.value || "",
+        avatar: textRecords.find((r) => r.key === "bubbles.avatar")?.value || "",
       }
     : null;
 
