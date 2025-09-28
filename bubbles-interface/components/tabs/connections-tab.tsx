@@ -1,0 +1,189 @@
+"use client";
+
+import { useState } from "react";
+import { motion } from "motion/react";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { FullConnectionItem } from "@/components/tabs/tab-components";
+import { NFCScanner } from "@/components/nfc-scanner";
+import { SendBubbleSheet } from "@/components/send-bubble-sheet";
+import { MOCK_CONNECTIONS, MockConnection, StoredConnection } from "@/lib/mock-data";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useEnsUser } from "@/lib/hooks/useEnsUser";
+import { toast } from "sonner";
+
+export function ConnectionsTab() {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isSendSheetOpen, setIsSendSheetOpen] = useState(false);
+  const [selectedConnection, setSelectedConnection] = useState<MockConnection | null>(null);
+  const [scannedUser, setScannedUser] = useState<{
+    address: `0x${string}`;
+    ensName?: string;
+    avatar?: string;
+  } | null>(null);
+
+  // localStorage for user connections
+  const [storedConnections, setStoredConnections] = useLocalStorage<StoredConnection[]>("bubbles-connections", []);
+
+  // Get ENS data for the scanned user to fetch fresh data
+  const scannedUserEns = useEnsUser(scannedUser?.address);
+
+  // Combine mock connections with stored connections for display
+  const allConnections = [
+    ...MOCK_CONNECTIONS.map(conn => ({ ...conn, source: 'mock' as const })),
+    ...storedConnections.map(conn => ({ ...conn, source: 'stored' as const }))
+  ];
+
+  const handleScanSuccess = (user: { address: `0x${string}`; ensName?: string; avatar?: string }) => {
+    setScannedUser(user);
+    setIsSheetOpen(true);
+  };
+
+  const handleAddConnection = () => {
+    if (scannedUser && scannedUserEns) {
+      // Check if connection already exists
+      const existingConnection = storedConnections.find(conn => conn.address === scannedUser.address);
+
+      if (existingConnection) {
+        toast.error("This connection already exists!");
+        return;
+      }
+
+      // Create new connection with ENS data
+      const newConnection: StoredConnection = {
+        id: `stored-${Date.now()}`,
+        address: scannedUser.address,
+        ensName: scannedUserEns.ensName || undefined,
+        avatar: scannedUserEns.avatar || undefined,
+        addedAt: new Date().toISOString(),
+        lastSeen: "just now",
+        bubblesSent: 0,
+        bubblesReceived: 0,
+      };
+
+      // Add to localStorage
+      setStoredConnections(prev => [...prev, newConnection]);
+
+      toast.success(`Added ${scannedUserEns.displayName} to your connections!`);
+      setIsSheetOpen(false);
+      setScannedUser(null);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="space-y-6"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="flex items-center justify-between"
+      >
+        <h1
+          className="text-2xl font-bold text-slate-800"
+          style={{
+            textShadow: "0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
+          }}
+        >
+          My Connections
+        </h1>
+        <NFCScanner
+          onScanSuccess={handleScanSuccess}
+          buttonText="Add Connection"
+          buttonIcon={<Plus className="h-4 w-4" />}
+          buttonSize="sm"
+          buttonClassName="skeu-button rounded-2xl relative group"
+        />
+      </motion.div>
+
+      <div className="space-y-4">
+        {MOCK_CONNECTIONS.map((connection, i) => (
+          <FullConnectionItem
+            key={connection.id}
+            connection={connection}
+            index={i}
+            onSend={(selectedConn) => {
+              setSelectedConnection(selectedConn);
+              setIsSendSheetOpen(true);
+            }}
+          />
+        ))}
+      </div>
+
+      {/* NFC Scan Result Sheet */}
+      <Sheet
+        open={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
+      >
+        <SheetContent
+          side="bottom"
+          className="max-h-[80vh]"
+        >
+          <SheetHeader>
+            <SheetTitle>New Connection Found!</SheetTitle>
+            <SheetDescription>Would you like to add this person to your connections?</SheetDescription>
+          </SheetHeader>
+
+          {scannedUser && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-6 pt-2"
+            >
+              {/* User Profile Preview */}
+              <div className="skeu-card mb-6 rounded-3xl p-6">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={scannedUser.avatar} />
+                    <AvatarFallback className="text-lg font-bold text-slate-800">
+                      {scannedUser.ensName?.[0]?.toUpperCase() || scannedUser.address.slice(2, 4).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-slate-800">{scannedUser.ensName || "Unknown User"}</h3>
+                    <p className="font-mono text-sm text-slate-600">
+                      {scannedUser.address.slice(0, 6)}...{scannedUser.address.slice(-4)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1 rounded-2xl border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800"
+                  onClick={() => setIsSheetOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="skeu-button group relative flex-1 rounded-2xl"
+                  onClick={handleAddConnection}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Connection
+                  <div className="absolute inset-0 -translate-x-full rounded-2xl bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Send Bubble Sheet */}
+      <SendBubbleSheet
+        open={isSendSheetOpen}
+        onOpenChange={setIsSendSheetOpen}
+        connectionAddress={selectedConnection?.address || null}
+      />
+    </motion.div>
+  );
+}
