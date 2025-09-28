@@ -15,3 +15,6 @@ export const basePaymasterRpc = `https://rpc.zerodev.app/api/v3/${PROJECT_ID}/ch
 export const arbitrumBundlerRpc = `https://rpc.zerodev.app/api/v3/${PROJECT_ID}/chain/42161`;
 export const arbitrumPaymasterRpc = `https://rpc.zerodev.app/api/v3/${PROJECT_ID}/chain/42161`;
 export const entryPoint = getEntryPoint("0.7");
+
+export const ArbitrumRpc = "https://lb.drpc.org/arbitrum/AvmKyi9C4kXGoJxPjEaJYCjRtP5RmiYR8Lzlwg8TMB_n";
+export const BaseRpc = "https://lb.drpc.org/base/AvmKyi9C4kXGoJxPjEaJYCjRtP5RmiYR8Lzlwg8TMB_n";

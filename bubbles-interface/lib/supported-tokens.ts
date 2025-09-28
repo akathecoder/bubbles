@@ -57,8 +57,24 @@ export const tokens: Record<string, Token[]> = {
       address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       icon: "$",
     },
+    {
+      id: "dai",
+      name: "Dai Stablecoin",
+      symbol: "DAI",
+      decimals: 18,
+      address: "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
+      icon: "$",
+    },
   ],
   arbitrum: [
+    {
+      id: "usdc",
+      name: "USD Coin",
+      symbol: "USDC",
+      decimals: 6,
+      address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+      icon: "$",
+    },
     {
       id: "usdt",
       name: "Tether USD",
@@ -72,7 +88,7 @@ export const tokens: Record<string, Token[]> = {
       name: "PayPal USD",
       symbol: "PYUSD",
       decimals: 6,
-      address: "0x52A8845DF664D76C69d2EEa607CD793565aF42B8",
+      address: "0x46850aD61C2B7d64d08c9C754F45254596696984",
       icon: "$",
     },
   ],
