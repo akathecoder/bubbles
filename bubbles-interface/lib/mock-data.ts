@@ -86,3 +86,15 @@ export interface MockConnection {
   bubblesSent: number;
   bubblesReceived: number;
 }
+
+// Type for connections stored in localStorage
+export interface StoredConnection {
+  id: string;
+  address: `0x${string}`;
+  ensName?: string;
+  avatar?: string;
+  addedAt: string; // ISO date string
+  lastSeen: string;
+  bubblesSent: number;
+  bubblesReceived: number;
+}

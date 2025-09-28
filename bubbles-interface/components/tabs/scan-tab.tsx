@@ -9,13 +9,13 @@ import { toast } from "sonner";
 
 export function ScanTab() {
   const [scannedUser, setScannedUser] = useState<{
-    address: string;
+    address: `0x${string}`;
     ensName?: string;
     avatar?: string;
   } | null>(null);
   const [isSendSheetOpen, setIsSendSheetOpen] = useState(false);
 
-  const handleScanSuccess = (user: { address: string; ensName?: string; avatar?: string }) => {
+  const handleScanSuccess = (user: { address: `0x${string}`; ensName?: string; avatar?: string }) => {
     setScannedUser(user);
     setIsSendSheetOpen(true);
   };
@@ -63,7 +63,7 @@ export function ScanTab() {
         <SendBubbleSheet
           open={isSendSheetOpen}
           onOpenChange={setIsSendSheetOpen}
-          connectionAddress={scannedUser?.address as `0x${string}` || null}
+          connectionAddress={scannedUser?.address || null}
           onSendComplete={handleSendComplete}
         />
       </div>

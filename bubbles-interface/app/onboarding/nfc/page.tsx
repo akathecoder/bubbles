@@ -4,13 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { NFCAnimation } from "@/components/ui/nfc-animation";
 import { CommandResponse } from "@/lib/halo";
-import {
-  baseSepoliaBundlerRpc,
-  baseSepoliaPaymasterRpc,
-  entryPoint,
-  kernelAddresses,
-  kernelVersion,
-} from "@/lib/utils";
+import { baseBundlerRpc, basePaymasterRpc, entryPoint, kernelAddresses, kernelVersion } from "@/lib/utils";
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
 import { useMutation } from "@tanstack/react-query";
 import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk";
@@ -38,7 +32,7 @@ export default function NFCPage() {
     if (!baseSepoliaPublicClient) return null;
     return createZeroDevPaymasterClient({
       chain: baseSepolia,
-      transport: http(baseSepoliaPaymasterRpc),
+      transport: http(basePaymasterRpc),
     });
   }, [baseSepoliaPublicClient]);
 
@@ -53,7 +47,7 @@ export default function NFCPage() {
       if (!baseSepoliaPublicClient) throw new Error("No public client");
       const paymasterClient = createZeroDevPaymasterClient({
         chain: baseSepolia,
-        transport: http(baseSepoliaPaymasterRpc),
+        transport: http(basePaymasterRpc),
       });
       if (!baseSepoliaPaymasterClient) throw new Error("No paymaster client");
       if (!paymasterClient) throw new Error("No paymaster client");
@@ -86,7 +80,7 @@ export default function NFCPage() {
       const sessionKeyKernelAccountClient = createKernelAccountClient({
         account: sessionKeyKernelAccount,
         chain: baseSepolia,
-        bundlerTransport: http(baseSepoliaBundlerRpc),
+        bundlerTransport: http(baseBundlerRpc),
         paymaster: baseSepoliaPaymasterClient,
         client: baseSepoliaPublicClient,
       });
@@ -419,7 +413,7 @@ export default function NFCPage() {
 //     // const kernelAccountClient = createKernelAccountClient({
 //     //   account: sessionkernelAccount,
 //     //   chain: baseSepolia,
-//     //   bundlerTransport: http(baseSepoliaBundlerRpc),
+//     //   bundlerTransport: http(baseBundlerRpc),
 //     //   paymaster: baseSepoliaPaymasterClient,
 //     //   client: baseSepoliaPublicClient,
 //     // });
