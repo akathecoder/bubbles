@@ -55,17 +55,13 @@ export function NFCScanner({
     onSuccess: async (address) => {
       toast.success("NFC scan successful!");
 
-      // Mock ENS lookup - in real app, you'd call ENS resolver
-      const mockEnsName = `user-${address.slice(-4)}.eth`;
-      const mockAvatar = ["👼", "👨‍💻", "👩‍⚖️", "🦹‍♀️", "🤖", "🧸"][Math.floor(Math.random() * 6)];
+      const res = await fetch(`https://bubbles-server.onrender.com/api/ens/reverse_lookup/${address}`);
+      const name = (await res.json()) as { ensAddress: string };
 
-      const scannedUser: ScannedUser = {
-        address,
-        ensName: mockEnsName,
-        avatar: mockAvatar,
-      };
-
-      onScanSuccess?.(scannedUser);
+      onScanSuccess?.({
+        address: address,
+        ensName: name.ensAddress,
+      });
     },
     onError: (error) => {
       const errorMessage = error instanceof Error ? error.message : String(error);
