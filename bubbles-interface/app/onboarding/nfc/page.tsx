@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { NFCAnimation } from "@/components/ui/nfc-animation";
-import { CommandResponse } from "@/lib/halo";
+import { CommandResponse, KeyInfo2 } from "@/lib/halo";
 import { baseBundlerRpc, basePaymasterRpc, entryPoint, kernelAddresses, kernelVersion } from "@/lib/utils";
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
 import { useMutation } from "@tanstack/react-query";
@@ -13,7 +13,7 @@ import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { toast } from "sonner";
-import { createWalletClient, http, keccak256 } from "viem";
+import { createWalletClient, http, keccak256, toHex } from "viem";
 import { baseSepolia } from "viem/chains";
 import { usePublicClient } from "wagmi";
 import { useLocalStorage } from "usehooks-ts";
@@ -55,15 +55,20 @@ export default function NFCPage() {
       //   name: "get_pkeys",
       // })) as Promise<{ etherAddresses: Record<string, `0x${string}`> }>;
 
-      const signature = (await execHaloCmdWeb({
-        name: "sign",
+      // const signature = (await execHaloCmdWeb({
+      //   name: "sign",
+      //   keyNo: 1,
+      //   message: keccak256("0xb00b1e5"),
+      // })) as CommandResponse;
+
+      const data = (await execHaloCmdWeb({
+        name: "get_key_info",
         keyNo: 1,
-        message: keccak256("0xb00b1e5"),
-      })) as CommandResponse;
+      })) as KeyInfo2;
 
-      toast.success(`NFC Tag scanned: ${signature.etherAddress}`);
+      toast.success(`NFC Tag scanned: ${data.attestSig}`);
 
-      const pkey = keccak256(signature.signature.ether) as `0x${string}`;
+      const pkey = keccak256(toHex(data.attestSig)) as `0x${string}`;
       const sessionKeyAccount = privateKeyToAccount(pkey);
 
       const sessionKeyKernelAccount = await createKernelAccount(baseSepoliaPublicClient, {
@@ -99,7 +104,7 @@ export default function NFCPage() {
       console.log("7702 tx hash:", tx);
 
       return {
-        address: signature.etherAddress,
+        address: sessionKeyAccount.address,
         pkey: pkey,
       };
     },
