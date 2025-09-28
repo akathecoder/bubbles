@@ -253,7 +253,6 @@ export const BubbleListItem = ({
 
       <div className="flex-1">
         <div className="font-bold text-slate-800">{title || type.name}</div>
-        <div className="text-sm text-slate-600">{subtitle || type.description}</div>
       </div>
 
       <div className="text-right">
