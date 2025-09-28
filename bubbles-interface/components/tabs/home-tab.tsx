@@ -10,8 +10,9 @@ import { formatUnits } from "viem";
 import { base } from "viem/chains";
 import { useEnsUser } from "@/lib/hooks/useEnsUser";
 import { parsePreferredPayment } from "@/lib/utils/payment";
-import { MOCK_BUBBLE_HISTORY, MOCK_CONNECTIONS } from "@/lib/mock-data";
+import { MOCK_BUBBLE_HISTORY, MOCK_CONNECTIONS, StoredConnection } from "@/lib/mock-data";
 import useSessionKey from "@/lib/hooks/useSessionKey";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 export function HomeTab() {
   // Get current user's ENS data
@@ -23,6 +24,12 @@ export function HomeTab() {
 
   // Parse preferred payment from ENS data
   const paymentConfig = currentUser.preferredPayment ? parsePreferredPayment(currentUser.preferredPayment) : null;
+
+  // localStorage for user connections
+  const [storedConnections, setStoredConnections] = useLocalStorage<StoredConnection[]>("bubbles-connections", []);
+
+  // Use only stored connections
+  const allConnections = storedConnections;
 
   // Get token balance using wagmi
   const { data: tokenBalance, isLoading: isBalanceLoading } = useBalance({
@@ -111,7 +118,7 @@ export function HomeTab() {
       </motion.div>
 
       {/* Bubble History */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
@@ -144,7 +151,7 @@ export function HomeTab() {
             );
           })}
         </div>
-      </motion.div>
+      </motion.div> */}
 
       {/* Recent Connections */}
       <motion.div
@@ -155,24 +162,21 @@ export function HomeTab() {
       >
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-bold text-slate-800">Recent Connections</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-slate-600 hover:text-slate-800"
-          >
-            <Users className="mr-2 h-4 w-4" />
-            View All
-          </Button>
         </div>
 
         <div className="space-y-3">
-          {MOCK_CONNECTIONS.slice(0, 3).map((connection, i) => (
+          {allConnections.slice(0, 3).map((connection, i) => (
             <ConnectionItem
               key={connection.id}
               connection={connection}
               index={i}
             />
           ))}
+          {allConnections.length === 0 && (
+            <p className="text-center text-sm text-slate-600">
+              No connections yet. Scan someone's NFC tag to add them!
+            </p>
+          )}
         </div>
       </motion.div>
     </motion.div>
